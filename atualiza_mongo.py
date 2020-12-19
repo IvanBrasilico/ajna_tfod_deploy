@@ -20,7 +20,7 @@ model = SSDModel()
 
 def monta_filtro(db, limit: int):
     filtro = {'metadata.contentType': 'image/jpeg',
-              # 'metadata.dataescaneamento': {'$gte': datetime(2020, 12, 16)},
+              'metadata.dataescaneamento': {'$gte': datetime(2020, 12, 16)},
               'metadata.predictions.bbox': {'$exists': False}}
     cursor = db['fs.files'].find(
         filtro, {'metadata.predictions': 1}).limit(limit)[:limit]

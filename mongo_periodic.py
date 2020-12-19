@@ -10,15 +10,15 @@ if not MONGODB_URI:
     MONGODB_URI = 'mongodb://localhost'
 with MongoClient(host=MONGODB_URI) as conn:
     mongodb = conn['test']
-    update_mongo(mongodb, 60000)
+    update_mongo(mongodb, 1000)
     s0 = time.time()
     counter = 1
     while True:
-        print('Dormindo 10 minutos... ')
-        print('Tempo decorrido %s segundos.' % (time.time() - s0))
-        time.sleep(30)
-        if time.time() - s0 > 600:
+        print('Dormindo 30 minutos... ')
+        print('Tempo decorrido %s minutos.' % ((time.time() - s0) // 60))
+        time.sleep(600)
+        if time.time() - s0 > 60*30:
             print('Periódico chamado rodada %s' % counter)
             counter += 1
-            update_mongo(mongodb, 60000)
+            update_mongo(mongodb, 1000)
             s0 = time.time()
