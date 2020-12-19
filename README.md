@@ -48,7 +48,7 @@ Adapte as configurações de usuário, caminho e variável do Mongo no arquivo s
 Criar os diretórios de log se necessário
 ```
 sudo yum install supervisor
-sudo cp mongo_periodic.conf /etc/supervisor.d/ <-- Roda modelo direto no Banco
+sudo cp supervisor_mongo.conf /etc/supervisor.d/ <-- Roda modelo direto no Banco
 ou 
 sudo cp supervisor_api.conf  /etc/supervisor.d/ <-- Roda a API
 sudo systemctl start supervisord
