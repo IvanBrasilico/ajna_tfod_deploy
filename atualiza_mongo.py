@@ -1,0 +1,81 @@
+import io
+import os
+import sys
+import time
+from collections import Counter
+from datetime import datetime
+
+from PIL import Image
+from bson import ObjectId
+from gridfs import GridFS
+from pymongo import MongoClient
+
+sys.path.append('.')
+from carrega_modelo_final import SSDModel, best_box
+
+MIN_RATIO = 2.1
+
+model = SSDModel()
+
+
+def monta_filtro(db, limit: int):
+    filtro = {'metadata.contentType': 'image/jpeg',
+              # 'metadata.dataescaneamento': {'$gte': datetime(2020, 12, 16)},
+              'metadata.predictions.bbox': {'$exists': False}}
+    cursor = db['fs.files'].find(
+        filtro, {'metadata.predictions': 1}).limit(limit)[:limit]
+    print('Consulta ao banco efetuada.')
+    return cursor
+
+
+def update_mongo(db, limit=10):
+    fs = GridFS(db)
+    cursor = monta_filtro(db, limit)
+    score_soma = 0.
+    contagem = 0.001
+    counter = Counter()
+    for ind, registro in enumerate(cursor):
+        s0 = time.time()
+        _id = ObjectId(registro['_id'])
+        # pred_gravado = registro.get('metadata').get('predictions')
+        grid_out = fs.get(_id)
+        image = grid_out.read()
+        pil_image = Image.open(io.BytesIO(image))
+        s1 = time.time()
+        print(f'Elapsed retrieve time {s1 - s0}')
+        preds, class_label, score = best_box(model, pil_image, threshold=0.7)
+        if score > 0.:
+            score_soma += score
+            contagem += 1.
+        if class_label is None:
+            print(f'Pulando registro {_id}')
+            continue
+        new_preds = preds.copy()
+        s2 = time.time()
+        print(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
+        print(preds[0], pil_image.size[0], preds[0] * pil_image.size[0])
+        print(preds[1], pil_image.size[1], preds[1] * pil_image.size[1])
+        new_preds[1] = int(preds[0] * pil_image.size[0])
+        new_preds[0] = int(preds[1] * pil_image.size[1])
+        new_preds[3] = int(preds[2] * pil_image.size[0])
+        new_preds[2] = int(preds[3] * pil_image.size[1])
+        h = new_preds[2] - new_preds[0]
+        w = new_preds[3] - new_preds[1]
+        class_label = 0 if (w / h > MIN_RATIO) else 1
+        new_predictions = [{'bbox': new_preds, 'class': class_label + 1, 'score': score}]
+        print(new_predictions)
+        db['fs.files'].update(
+            {'_id': _id},
+            {'$set': {'metadata.predictions': new_predictions}}
+        )
+        s3 = time.time()
+        print(f'Elapsed update time {s3 - s2} - registro {ind}')
+
+
+if __name__ == '__main__':
+    MONGODB_URI = os.environ.get('MONGODB_URI')
+    if not MONGODB_URI:
+        MONGODB_URI = 'mongodb://localhost'
+    conn = MongoClient(host=MONGODB_URI)
+    mongodb = conn['test']
+    update_mongo(mongodb, 60000)
