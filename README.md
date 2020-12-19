@@ -29,3 +29,17 @@ $ export MONGODB_URI=mongodb://127.0.0.1
 $ python atualiza_mongo.py
 ```
 Ou, então, rodar a API, colocar autenticação ou firewall, e consultar modelo via HTTP de um cliente que acessa o MongoDB
+
+
+Deploy, isto é, instalando como serviço:
+
+Adapte as configurações de usuário, caminho e variável do Mongo no arquivo supervisor_*.conf. 
+Criar os diretórios de log se necessário
+```
+$ sudo yum install supervisor
+$ sudo cp mongo_periodic.conf /etc/supervisor.d/ <-- Roda modelo direto no Banco
+ou 
+$ sudo cp supervisor_api.conf  /etc/supervisor.d/ <-- Roda a API
+$ sudo systemctl start supervisord
+$ sudo systemctl enable supervisord
+```
