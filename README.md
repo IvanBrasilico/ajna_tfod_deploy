@@ -17,13 +17,24 @@ python3.6 -m virtualenv venv
 pip install -r requirements.txt
 ```
 
+Se receber um erro do pip, tente atualizar a versão (pip install --upgrade pip)
+
 Configuração
 
 Copie o arquivo de pipeline e checkpoint para o diretório models.
 
-Modifique a variável MODEL no arquivo carrega_modelo_final (MODEL = 'models/efficientdet_d1/')
+Modifique a variável MODEL no arquivo carrega_modelo_final (MODEL = 'models/efficientdet_d1/') e rode um teste:
+```
+(venv)$ python carrega_modelo_final.py
+(...) (mensagens do tensorflow) (...)
+Weights restored!
+0
+[0.04953301 0.0468877  0.83721554 0.8820708 ]
+```
+Pronto, configurado!
 
-Exemplo de como rodar (substituir 127.0.0.1 pelo usuário, senha e endereço do Servidor MongoDB) 
+
+Exemplo de como rodar atualização das imagens no Mongo do virasana (substituir 127.0.0.1 pelo usuário, senha e endereço do Servidor MongoDB) 
 ```
 export MONGODB_URI=mongodb://127.0.0.1
 python atualiza_mongo.py
