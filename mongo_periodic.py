@@ -16,7 +16,7 @@ with MongoClient(host=MONGODB_URI) as conn:
     while True:
         print('Dormindo 30 minutos... ')
         print('Tempo decorrido %s minutos.' % ((time.time() - s0) // 60))
-        time.sleep(600)
+        time.sleep(60)
         if time.time() - s0 > 60*30:
             print('Periódico chamado rodada %s' % counter)
             counter += 1
