@@ -44,13 +44,14 @@ Ou, então, rodar a API, colocar autenticação ou firewall, e consultar modelo 
 
 Deploy, isto é, instalando como serviço:
 
-Adapte as configurações de usuário, caminho e variável do Mongo no arquivo supervisor_*.conf. 
+Adapte as configurações de usuário, caminho e variável do Mongo no arquivo supervisor_*.ini
+
 Criar os diretórios de log se necessário
 ```
 sudo yum install supervisor
-sudo cp supervisor_mongo.conf /etc/supervisor.d/ <-- Roda modelo direto no Banco
+sudo cp supervisor_mongo.ini /etc/supervisor.d/ <-- Roda modelo direto no Banco
 ou 
-sudo cp supervisor_api.conf  /etc/supervisor.d/ <-- Roda a API
+sudo cp supervisor_api.ini  /etc/supervisor.d/ <-- Roda a API
 sudo systemctl start supervisord
 sudo systemctl enable supervisord
 ```
