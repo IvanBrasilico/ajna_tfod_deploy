@@ -34,7 +34,7 @@ def modelo_ssd():
     model_config.ssd.freeze_batchnorm = True
     ssd_model = model_builder.build(model_config=model_config, is_training=False)
     ckpt_trained = tf.compat.v2.train.Checkpoint(model=ssd_model)
-    ckpt_trained.restore(MODEL + 'checkpoint_2classes/ckpt-2').expect_partial()
+    ckpt_trained.restore(MODEL + 'checkpoint_2classes_ciclo2/ckpt-5').expect_partial()
     print('Weights restored!')
     return ssd_model
 
