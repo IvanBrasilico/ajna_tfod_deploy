@@ -105,7 +105,6 @@ classes = {0: 'Container 40',
 
 
 def predict_image(path, name):
-    load_la
     image = Image.open(path)
     detections = model.predict(image)
     ind = np.argmax(detections['detection_scores'][0].numpy())
@@ -147,7 +146,8 @@ if __name__ == '__main__':
         pil_image.save(f'{filename}_original.jpg')
 
 
-    test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg']
+    test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg',
+                   'test/5fe24810797187c24a9299e4.jpeg']
     for ind, path in enumerate(test_images):
         print(f'Test Image {ind}')
         predict_image(path, f'teste{ind}.jpg')
