@@ -90,7 +90,7 @@ def best_box(model, pil_image, threshold=0.8):
 
 def normalize_preds(preds, shape):
     (im_width, im_height) = shape
-    print(f'width: {im_width} height: {im_height} ')
+    print(f'height: {im_height}  width: {im_width}')
     y1 = int(preds[0] * im_height)
     x1 = int(preds[1] * im_width)
     y2 = int(preds[2] * im_height)
@@ -105,11 +105,12 @@ classes = {0: 'Container 40',
 
 
 def predict_image(path, name):
+    load_la
     image = Image.open(path)
     detections = model.predict(image)
     ind = np.argmax(detections['detection_scores'][0].numpy())
-    print(ind)
-    print(detections['detection_boxes'][0][ind].numpy())
+    print(f'Best bbox {ind}')
+    print(f'Detection boxes originais {detections["detection_boxes"][0][ind].numpy()}')
     label_id_offset = 1
     plot_detections(
         model.image_to_np(image),
@@ -138,15 +139,16 @@ if __name__ == '__main__':
     def normalized_image(path, filename):
         pil_image = Image.open(path)
         preds, class_label, score = best_box(model, pil_image, threshold=0.5)
-        print(preds)
+        print(f'Resultado de best_bbox {preds}')
         new_preds = normalize_preds(preds, pil_image.size)
-        print(f'class: {class_label} bbox: {new_preds} score:{score}')
+        print(f'Resultado de normalize preds: '
+              f'class: {class_label} bbox: {new_preds} score:{score}')
         draw_bboxes(pil_image, [new_preds])
         pil_image.save(f'{filename}_original.jpg')
 
 
     test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg']
     for ind, path in enumerate(test_images):
-        print(f'Image {ind}')
+        print(f'Test Image {ind}')
         predict_image(path, f'teste{ind}.jpg')
         normalized_image(path, f'teste{ind}')
