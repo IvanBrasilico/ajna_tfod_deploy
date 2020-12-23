@@ -11,7 +11,7 @@ from gridfs import GridFS
 from pymongo import MongoClient
 
 sys.path.append('.')
-from carrega_modelo_final import SSDModel, best_box
+from carrega_modelo_final import SSDModel, best_box, normalize_preds
 
 MIN_RATIO = 2.1
 
@@ -43,25 +43,19 @@ def update_mongo(db, limit=10):
         pil_image = Image.open(io.BytesIO(image))
         s1 = time.time()
         print(f'Elapsed retrieve time {s1 - s0}')
-        preds, class_label, score = best_box(model, pil_image, threshold=0.7)
+        preds, class_label, score = best_box(model, pil_image, threshold=0.5)
         if score > 0.:
             score_soma += score
             contagem += 1.
         if class_label is None:
             print(f'Pulando registro {_id}')
             continue
-        new_preds = preds.copy()
         s2 = time.time()
         print(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
-        print(preds[0], pil_image.size[0], preds[0] * pil_image.size[0])
-        print(preds[1], pil_image.size[1], preds[1] * pil_image.size[1])
-        new_preds[1] = int(preds[0] * pil_image.size[0])
-        new_preds[0] = int(preds[1] * pil_image.size[1])
-        new_preds[3] = int(preds[2] * pil_image.size[0])
-        new_preds[2] = int(preds[3] * pil_image.size[1])
+        new_preds = normalize_preds(preds, pil_image.size)
         h = new_preds[2] - new_preds[0]
         w = new_preds[3] - new_preds[1]
-        class_label = 0 if (w / h > MIN_RATIO) else 1
+        class_label = 0 if (w / h > 2.1) else 1
         new_predictions = [{'bbox': new_preds, 'class': class_label + 1, 'score': score}]
         print(new_predictions)
         db['fs.files'].update(

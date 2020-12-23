@@ -1,7 +1,7 @@
 import sys
 
 sys.path.append('.')
-from PIL import Image
+from PIL import Image, ImageDraw
 import numpy as np
 
 # TODO: Descomentar abaixo para rodar inferência na CPU
@@ -88,6 +88,16 @@ def best_box(model, pil_image, threshold=0.8):
     return preds, class_label, score
 
 
+def normalize_preds(preds, shape):
+    (im_width, im_height) = shape
+    print(f'width: {im_width} height: {im_height} ')
+    y1 = int(preds[0] * im_height)
+    x1 = int(preds[1] * im_width)
+    y2 = int(preds[2] * im_height)
+    x2 = int(preds[3] * im_width)
+    return [y1, x1, y2, x2]
+
+
 classes = {0: 'Container 40',
            1: 'Container 20',
            2: 'Container não localizado',
@@ -110,11 +120,33 @@ def predict_image(path, name):
         figsize=(15, 20), image_name=name)
 
 
+def draw_bboxes(pil_image, bboxes: list):
+    draw = ImageDraw.Draw(pil_image)
+    for coords in bboxes:
+        draw.rectangle((coords[1] - 2, coords[0] - 2, coords[3] + 2, coords[2] + 2),
+                       outline='#2288EE', width=4)
+
+
 if __name__ == '__main__':
     model = SSDModel()
+
+
     # TODO: Cadastrar tarefas feitas hoje/ontem no Taiga
     # TODO: Cadastrar tarefas necessárias para TODO abaixo no Taiga
     # TODO: Carregar uma ou duas imagens e comparar predições com predições salvas para sanity check
     # TODO: Criar API conforme exemplo_ciclo para receber uma imagem e retornar predições
-    path = 'test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg'
-    predict_image(path, 'teste1.jpg')
+    def normalized_image(path, filename):
+        pil_image = Image.open(path)
+        preds, class_label, score = best_box(model, pil_image, threshold=0.5)
+        print(preds)
+        new_preds = normalize_preds(preds, pil_image.size)
+        print(f'class: {class_label} bbox: {new_preds} score:{score}')
+        draw_bboxes(pil_image, [new_preds])
+        pil_image.save(f'{filename}_original.jpg')
+
+
+    test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg']
+    for ind, path in enumerate(test_images):
+        print(f'Image {ind}')
+        predict_image(path, f'teste{ind}.jpg')
+        normalized_image(path, f'teste{ind}')
