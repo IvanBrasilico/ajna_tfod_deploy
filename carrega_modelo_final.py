@@ -130,12 +130,7 @@ def draw_bboxes(pil_image, bboxes: list):
 if __name__ == '__main__':
     model = SSDModel()
 
-
-    # TODO: Cadastrar tarefas feitas hoje/ontem no Taiga
-    # TODO: Cadastrar tarefas necessárias para TODO abaixo no Taiga
-    # TODO: Carregar uma ou duas imagens e comparar predições com predições salvas para sanity check
-    # TODO: Criar API conforme exemplo_ciclo para receber uma imagem e retornar predições
-    def normalized_image(path, filename):
+    def normalized_image_test(path, filename):
         pil_image = Image.open(path)
         preds, class_label, score = best_box(model, pil_image, threshold=0.5)
         print(f'Resultado de best_bbox {preds}')
@@ -144,11 +139,18 @@ if __name__ == '__main__':
               f'class: {class_label} bbox: {new_preds} score:{score}')
         draw_bboxes(pil_image, [new_preds])
         pil_image.save(f'{filename}_original.jpg')
+        return new_preds
+
 
 
     test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg',
                    'test/5fe24810797187c24a9299e4.jpeg']
+    ground_true_bbox = [[15, 49, 214, 518] ,
+                        [13, 98, 702, 1372]]
+
     for ind, path in enumerate(test_images):
         print(f'Test Image {ind}')
         predict_image(path, f'teste{ind}.jpg')
-        normalized_image(path, f'teste{ind}')
+        bbox = normalized_image_test(path, f'teste{ind}')
+        assert sum([abs(item_pred - item_groung_truth)
+                    for item_pred, item_groung_truth in zip(bbox, ground_true_bbox[ind])]) < 10
