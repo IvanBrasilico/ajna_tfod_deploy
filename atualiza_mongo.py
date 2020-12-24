@@ -2,20 +2,17 @@ import io
 import os
 import sys
 import time
-from collections import Counter
-from datetime import datetime
-
 from PIL import Image
 from bson import ObjectId
+from collections import Counter
+from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
 sys.path.append('.')
-from carrega_modelo_final import SSDModel, best_box, normalize_preds
+from carrega_modelo_final import best_box, normalize_preds
 
 MIN_RATIO = 2.1
-
-model = SSDModel()
 
 
 def monta_filtro(db, limit: int):
@@ -28,7 +25,7 @@ def monta_filtro(db, limit: int):
     return cursor
 
 
-def update_mongo(db, limit=10):
+def update_mongo(model, db, limit=10):
     fs = GridFS(db)
     cursor = monta_filtro(db, limit)
     score_soma = 0.
