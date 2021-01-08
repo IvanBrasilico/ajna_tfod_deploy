@@ -34,7 +34,7 @@ def modelo_ssd():
     model_config.ssd.freeze_batchnorm = True
     ssd_model = model_builder.build(model_config=model_config, is_training=False)
     ckpt_trained = tf.compat.v2.train.Checkpoint(model=ssd_model)
-    ckpt_trained.restore(MODEL + 'checkpoint_2classes_ciclo2/ckpt-5').expect_partial()
+    ckpt_trained.restore(MODEL + 'checkpoint/ckpt-10').expect_partial()
     print('Weights restored!')
     return ssd_model
 
@@ -146,11 +146,11 @@ if __name__ == '__main__':
     test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg',
                    'test/5fe24810797187c24a9299e4.jpeg']
     ground_true_bbox = [[15, 49, 214, 518] ,
-                        [13, 98, 702, 1372]]
+                        [20, 66, 702, 1320]]
 
     for ind, path in enumerate(test_images):
         print(f'Test Image {ind}')
         predict_image(path, f'teste{ind}.jpg')
         bbox = normalized_image_test(path, f'teste{ind}')
         assert sum([abs(item_pred - item_groung_truth)
-                    for item_pred, item_groung_truth in zip(bbox, ground_true_bbox[ind])]) < 10
+                    for item_pred, item_groung_truth in zip(bbox, ground_true_bbox[ind])]) < 24
