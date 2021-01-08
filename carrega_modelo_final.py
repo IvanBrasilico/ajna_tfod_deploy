@@ -34,7 +34,7 @@ def modelo_ssd():
     model_config.ssd.freeze_batchnorm = True
     ssd_model = model_builder.build(model_config=model_config, is_training=False)
     ckpt_trained = tf.compat.v2.train.Checkpoint(model=ssd_model)
-    ckpt_trained.restore(MODEL + 'checkpoint_2classes_ciclo2/ckpt-5').expect_partial()
+    ckpt_trained.restore(MODEL + 'checkpoint/ckpt-10').expect_partial()
     print('Weights restored!')
     return ssd_model
 
@@ -130,12 +130,7 @@ def draw_bboxes(pil_image, bboxes: list):
 if __name__ == '__main__':
     model = SSDModel()
 
-
-    # TODO: Cadastrar tarefas feitas hoje/ontem no Taiga
-    # TODO: Cadastrar tarefas necessárias para TODO abaixo no Taiga
-    # TODO: Carregar uma ou duas imagens e comparar predições com predições salvas para sanity check
-    # TODO: Criar API conforme exemplo_ciclo para receber uma imagem e retornar predições
-    def normalized_image(path, filename):
+    def normalized_image_test(path, filename):
         pil_image = Image.open(path)
         pil_image = pil_image.convert('RGB')
         preds, class_label, score = best_box(model, pil_image, threshold=0.5)
@@ -145,11 +140,18 @@ if __name__ == '__main__':
               f'class: {class_label} bbox: {new_preds} score:{score}')
         draw_bboxes(pil_image, [new_preds])
         pil_image.save(f'{filename}_original.jpg')
+        return new_preds
+
 
 
     test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg',
                    'test/5fe24810797187c24a9299e4.jpeg']
+    ground_true_bbox = [[15, 49, 214, 518] ,
+                        [20, 66, 702, 1320]]
+
     for ind, path in enumerate(test_images):
         print(f'Test Image {ind}')
         predict_image(path, f'teste{ind}.jpg')
-        normalized_image(path, f'teste{ind}')
+        bbox = normalized_image_test(path, f'teste{ind}')
+        assert sum([abs(item_pred - item_groung_truth)
+                    for item_pred, item_groung_truth in zip(bbox, ground_true_bbox[ind])]) < 24
