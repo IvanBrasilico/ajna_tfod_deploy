@@ -137,6 +137,7 @@ if __name__ == '__main__':
     # TODO: Criar API conforme exemplo_ciclo para receber uma imagem e retornar predições
     def normalized_image(path, filename):
         pil_image = Image.open(path)
+        pil_image = pil_image.convert('RGB')
         preds, class_label, score = best_box(model, pil_image, threshold=0.5)
         print(f'Resultado de best_bbox {preds}')
         new_preds = normalize_preds(preds, pil_image.size)

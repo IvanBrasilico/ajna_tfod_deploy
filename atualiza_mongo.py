@@ -38,9 +38,10 @@ def update_mongo(model, db, limit=10):
         grid_out = fs.get(_id)
         image = grid_out.read()
         pil_image = Image.open(io.BytesIO(image))
+        pil_image = pil_image.convert('RGB')
         s1 = time.time()
         print(f'Elapsed retrieve time {s1 - s0}')
-        preds, class_label, score = best_box(model, pil_image, threshold=0.5)
+        preds, class_label, score = best_box(model, pil_image, threshold=0.8)
         if score > 0.:
             score_soma += score
             contagem += 1.
