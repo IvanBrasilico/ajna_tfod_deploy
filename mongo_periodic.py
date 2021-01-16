@@ -8,9 +8,9 @@ from carrega_modelo_final import SSDModel
 
 MONGODB_URI = os.environ.get('MONGODB_URI')
 if not MONGODB_URI:
-    MONGODB_URI = 'mongodb://localhost'
+    MONGODB_URI = 'mongodb://localhost/test'
 with MongoClient(host=MONGODB_URI) as conn:
-    mongodb = conn['test']
+    # mongodb = conn['test']
     model = SSDModel()
     update_mongo(model, mongodb, 1000)
     del model
