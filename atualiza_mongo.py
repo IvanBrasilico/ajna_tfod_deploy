@@ -14,7 +14,7 @@ from pymongo import MongoClient
 sys.path.append('.')
 from carrega_modelo_final import best_box, normalize_preds
 
-logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 MIN_RATIO = 2.1
 
