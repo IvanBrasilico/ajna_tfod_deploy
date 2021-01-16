@@ -1,6 +1,6 @@
 import os
 import time
-
+from logging import logger
 from pymongo import MongoClient
 
 from atualiza_mongo import update_mongo
@@ -17,11 +17,11 @@ with MongoClient(host=MONGODB_URI) as conn:
     s0 = time.time()
     counter = 1
     while True:
-        print('Dormindo 30 minutos... ')
-        print('Tempo decorrido %s minutos.' % ((time.time() - s0) // 60))
+        logger.info('Dormindo 30 minutos... ')
+        logger.info('Tempo decorrido %s minutos.' % ((time.time() - s0) // 60))
         time.sleep(60)
         if time.time() - s0 > 60*30:
-            print('Periódico chamado rodada %s' % counter)
+            logger.info('Periódico chamado rodada %s' % counter)
             counter += 1
             model = SSDModel()
             update_mongo(model, mongodb, 1000)
