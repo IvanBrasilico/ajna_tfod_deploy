@@ -10,7 +10,6 @@ from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
-logger = logging.getLogger(__name__)
 
 sys.path.append('.')
 from carrega_modelo_final import best_box, normalize_preds
@@ -24,7 +23,7 @@ def monta_filtro(db, limit: int):
               'metadata.predictions.bbox': {'$exists': False}}
     cursor = db['fs.files'].find(
         filtro, {'metadata.predictions': 1}).limit(limit)[:limit]
-    logger.info('Consulta ao banco efetuada.')
+    logging.info('Consulta ao banco efetuada.')
     return cursor
 
 
@@ -43,28 +42,28 @@ def update_mongo(model, db, limit=10):
         pil_image = Image.open(io.BytesIO(image))
         pil_image = pil_image.convert('RGB')
         s1 = time.time()
-        logger.info(f'Elapsed retrieve time {s1 - s0}')
+        logging.info(f'Elapsed retrieve time {s1 - s0}')
         preds, class_label, score = best_box(model, pil_image, threshold=0.8)
         if score > 0.:
             score_soma += score
             contagem += 1.
         if class_label is None:
-            logger.info(f'Pulando registro {_id}')
+            logging.info(f'Pulando registro {_id}')
             continue
         s2 = time.time()
-        logger.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
+        logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
         new_preds = normalize_preds(preds, pil_image.size)
         h = new_preds[2] - new_preds[0]
         w = new_preds[3] - new_preds[1]
         # class_label = 0 if (w / h > 2.1) else 1
         new_predictions = [{'bbox': new_preds, 'class': class_label + 1, 'score': score}]
-        logger.info(new_predictions)
+        logging.info(new_predictions)
         db['fs.files'].update(
             {'_id': _id},
             {'$set': {'metadata.predictions': new_predictions}}
         )
         s3 = time.time()
-        logger.info(f'Elapsed update time {s3 - s2} - registro {ind}')
+        logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
 
 
 if __name__ == '__main__':
