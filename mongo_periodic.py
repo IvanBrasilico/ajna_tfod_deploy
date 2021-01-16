@@ -6,7 +6,6 @@ from pymongo import MongoClient
 from atualiza_mongo import update_mongo
 from carrega_modelo_final import SSDModel
 
-logging = logging.getlogging(__name__)
 MONGODB_URI = os.environ.get('MONGODB_URI')
 database = ''.join(MONGODB_URI.rsplit('/')[-1:])
 if not MONGODB_URI:
