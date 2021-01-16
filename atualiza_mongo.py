@@ -1,4 +1,5 @@
 import io
+import logging
 import os
 import sys
 import time
@@ -8,7 +9,8 @@ from collections import Counter
 from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
-from logging import logger
+
+logger = logging.getLogger(__name__)
 
 sys.path.append('.')
 from carrega_modelo_final import best_box, normalize_preds
