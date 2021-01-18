@@ -55,8 +55,8 @@ def update_mongo(model, db, limit=10):
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
         new_preds = normalize_preds(preds, pil_image.size)
-        h = new_preds[2] - new_preds[0]
-        w = new_preds[3] - new_preds[1]
+        # h = new_preds[2] - new_preds[0]
+        # w = new_preds[3] - new_preds[1]
         # class_label = 0 if (w / h > 2.1) else 1
         new_predictions = [{'bbox': new_preds, 'class': class_label + 1, 'score': score}]
         logging.info(new_predictions)
