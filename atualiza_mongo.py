@@ -12,7 +12,7 @@ from pymongo import MongoClient
 
 
 sys.path.append('.')
-from carrega_modelo_final import best_box, normalize_preds
+from carrega_modelo_final import best_box, normalize_preds, SSDModel
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -67,6 +67,7 @@ def update_mongo(model, db, limit=10):
 
 
 if __name__ == '__main__':
+    model = SSDModel()
     MONGODB_URI = os.environ.get('MONGODB_URI')
     database = ''.join(MONGODB_URI.rsplit('/')[-1:])
     if not MONGODB_URI:
@@ -74,4 +75,4 @@ if __name__ == '__main__':
         database = 'test'
     with MongoClient(host=MONGODB_URI) as conn:
         mongodb = conn[database]
-        update_mongo(mongodb, 60000)
+        update_mongo(model, mongodb, 10)
