@@ -43,6 +43,7 @@ def update_mongo(model, db, limit=10):
         image = grid_out.read()
         pil_image = Image.open(io.BytesIO(image))
         pil_image = pil_image.convert('RGB')
+        size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
         preds, class_label, score = best_box(model, pil_image, threshold=0.8)
@@ -54,12 +55,9 @@ def update_mongo(model, db, limit=10):
             continue
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
-        new_preds = normalize_preds(preds, pil_image.size)
-        # h = new_preds[2] - new_preds[0]
-        # w = new_preds[3] - new_preds[1]
-        # class_label = 0 if (w / h > 2.1) else 1
+        new_preds = normalize_preds(preds, size)
         new_predictions = [{'bbox': new_preds, 'class': class_label + 1, 'score': score}]
-        logging.info(new_predictions)
+        logging.info({'_id': _id, 'metadata.predictions': new_predictions})
         db['fs.files'].update(
             {'_id': _id},
             {'$set': {'metadata.predictions': new_predictions}}
