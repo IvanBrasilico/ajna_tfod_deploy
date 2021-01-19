@@ -134,7 +134,7 @@ if __name__ == '__main__':
         pil_image = Image.open(path)
         pil_image = pil_image.convert('RGB')
         preds, class_label, score = best_box(model, pil_image, threshold=0.5)
-        print(f'Resultado de best_bbox {preds}')
+        print(f'Resultado de best_bbox {preds} Image {path}')
         new_preds = normalize_preds(preds, pil_image.size)
         print(f'Resultado de normalize preds: '
               f'class: {class_label} bbox: {new_preds} score:{score}')
@@ -150,7 +150,7 @@ if __name__ == '__main__':
                    ]
     ground_true_bbox = [[15, 49, 214, 518] ,
                         [20, 66, 702, 1320],
-                        [20, 66, 702, 1320]]
+                        [10, 77, 673, 1475]]
 
     for ind, path in enumerate(test_images):
         print(f'Test Image {ind}')
