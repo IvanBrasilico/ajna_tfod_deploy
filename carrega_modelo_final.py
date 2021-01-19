@@ -145,8 +145,11 @@ if __name__ == '__main__':
 
 
     test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg',
-                   'test/5fe24810797187c24a9299e4.jpeg']
+                   'test/5fe24810797187c24a9299e4.jpeg',
+                   'test/600581bc0be94217a2cc3bfc.jpeg'
+                   ]
     ground_true_bbox = [[15, 49, 214, 518] ,
+                        [20, 66, 702, 1320],
                         [20, 66, 702, 1320]]
 
     for ind, path in enumerate(test_images):
