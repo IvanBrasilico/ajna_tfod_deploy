@@ -39,14 +39,12 @@ def update_mongo(model, db, limit=10):
         image = grid_out.read()
         pil_image = Image.open(io.BytesIO(image))
         pil_image = pil_image.convert('RGB')
-        size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
-        pred = model.predict(image)
+        pred = model.predict(pil_image)
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}.')
-        new_predictions = [{'bbox': new_preds, 'vazio' : pred}]
-        logging.info({'_id': _id, 'metadata.predictions': new_predictions})
+        logging.info({'_id': _id, 'vazio': pred})
         db['fs.files'].update(
             {'_id': _id},
             {'$set': {'metadata.predictions.vazio': pred}}

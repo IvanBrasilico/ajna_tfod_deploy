@@ -14,7 +14,7 @@ if not MONGODB_URI:
     MONGODB_URI = 'mongodb://localhost'
     database = 'test'
 
-model = SSDModel()
+model = Model()
 
 with MongoClient(host=MONGODB_URI) as conn:
     mongodb = conn[database]
