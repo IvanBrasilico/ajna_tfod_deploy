@@ -47,7 +47,7 @@ def update_mongo(model, db, limit=10):
         logging.info({'_id': _id, 'vazio': pred})
         db['fs.files'].update(
             {'_id': _id},
-            {'$set': {'metadata.predictions.vazio': pred}}
+            {'$set': {'metadata.predictions.0.vazio': pred}}
         )
         s3 = time.time()
         logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
