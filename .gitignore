@@ -1,3 +1,5 @@
 # Project exclude paths
-/models/
+/models/efficientdet_d1
 /venv/
+/venv_tf23/
+
