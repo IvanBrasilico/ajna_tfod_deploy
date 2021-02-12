@@ -48,7 +48,7 @@ class Model():
         img_array = self.image_to_np(image)
         prediction = self.model.predict(img_array)
         # Retorna True se vazio e False se não vazio
-        return prediction[0] < .5
+        return float(prediction[0]) < .5
 
 
 classes = {0: 'Vazio',
