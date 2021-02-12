@@ -3,18 +3,20 @@ import logging
 import os
 import sys
 import time
-from PIL import Image
-from bson import ObjectId
 from collections import Counter
 from datetime import datetime
+
+from PIL import Image
+from bson import ObjectId
 from gridfs import GridFS
 from pymongo import MongoClient
-
 
 sys.path.append('.')
 from carrega_modelo_final import best_box, normalize_preds, SSDModel
 
-logging.basicConfig(level=logging.DEBUG)
+FORMAT_STRING = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
+
+logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 
 MIN_RATIO = 2.1
 

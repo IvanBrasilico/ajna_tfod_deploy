@@ -3,11 +3,13 @@ import os
 import time
 from pymongo import MongoClient
 
-from atualiza_mongo import update_mongo
+from atualiza_mongo import update_mongo, FORMAT_STRING
 from carrega_modelo_final import SSDModel
 
-logging.basicConfig(level=logging.DEBUG)
 
+logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
+
+model = SSDModel()
 MONGODB_URI = os.environ.get('MONGODB_URI')
 database = ''.join(MONGODB_URI.rsplit('/')[-1:])
 if not MONGODB_URI:
