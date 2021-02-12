@@ -64,20 +64,6 @@ class SSDModel():
         return self.model.postprocess(prediction_dict, shapes)
 
 
-class SSDModelFakeClassifier(SSDModel):
-    def predict(self, image):
-        detections = super().predict(image)
-        ind = np.argmax(detections['detection_scores'][0].numpy())
-        score = float(detections['detection_scores'][0][ind].numpy())
-        # class_label = int(detections['detection_classes'][0][ind].numpy())
-        preds = detections['detection_boxes'][0][ind].numpy()
-        score = (score + get_iou(preds, [0.1, 0.1, 0.8, 0.9])) / 2
-        return [score, 1 - score]
-
-pil_image = Image.open('teste.jpg')
-pil_image = pil_image.convert('RGB')
-model = SSDModelFakeClassifier()
-lime.evalutateImage(pil_image, model, [1., 0.])
 
 min_ratio = 1.5
 
