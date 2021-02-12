@@ -47,7 +47,8 @@ class Model():
     def predict(self, image):
         img_array = self.image_to_np(image)
         prediction = self.model.predict(img_array)
-        return 0. if prediction[0] < .5 else 1.
+        # Retorna True se vazio e False se não vazio
+        return prediction[0] < .5
 
 
 classes = {0: 'Vazio',
@@ -68,7 +69,7 @@ if __name__ == '__main__':
                    'test/5fe24810797187c24a9299e4.jpeg',
                    'test/600581bc0be94217a2cc3bfc.jpeg'
                    ]
-    ground_true = [1., 0., 0.]
+    ground_true = [False, True, True]
     for ind, path in enumerate(test_images):
         pred = image_test(path, f'teste{ind}.jpg')
         # print(pred, )
