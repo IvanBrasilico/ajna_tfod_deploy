@@ -64,7 +64,6 @@ class SSDModel():
         return self.model.postprocess(prediction_dict, shapes)
 
 
-
 min_ratio = 1.5
 
 
@@ -131,6 +130,7 @@ def draw_bboxes(pil_image, bboxes: list):
 if __name__ == '__main__':
     model = SSDModel()
 
+
     def normalized_image_test(path, filename):
         pil_image = Image.open(path)
         pil_image = pil_image.convert('RGB')
@@ -144,12 +144,11 @@ if __name__ == '__main__':
         return new_preds
 
 
-
     test_images = ['test/5c8e9cde1004b308a9d88b0a/5c8e9cde1004b308a9d88b0a.jpg',
                    'test/5fe24810797187c24a9299e4.jpeg',
                    'test/600581bc0be94217a2cc3bfc.jpeg'
                    ]
-    ground_true_bbox = [[15, 49, 214, 518] ,
+    ground_true_bbox = [[15, 49, 214, 518],
                         [20, 66, 702, 1320],
                         [10, 77, 673, 1475]]
 
