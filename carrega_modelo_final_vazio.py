@@ -1,5 +1,3 @@
-import sys
-
 # TODO: Descomentar abaixo para rodar inferência na CPU
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
@@ -11,12 +9,29 @@ try:
 except:
     pass
 
-SHAPE = (380, 380)
-MODEL = 'models/efficientdet_d1/'
+import numpy as np
+from PIL import Image
+from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras import layers
+
+
+IMG_SIZE = 380
+MODEL = 'models/efficientnetb4/ciclo1.h5'
 
 
 def build_model():
     # Carregar modelo e pesos do modelo
+    inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+    model = EfficientNetB4(include_top=False, input_tensor=inputs)
+    # Rebuild top
+    x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
+    x = layers.BatchNormalization()(x)
+    top_dropout_rate = 0.2
+    x = layers.Dropout(top_dropout_rate, name="top_dropout")(x)
+    outputs = layers.Dense(1, activation="sigmoid", name="pred")(x)
+    model = tf.keras.Model(inputs, outputs, name="EfficientNet")
+    model.trainable = False
+    model.load_weights(MODEL)
     return model
 
 
@@ -24,10 +39,10 @@ class Model():
     def __init__(self):
         self.model = build_model()
 
-    def image_to_np(self, image, imshape=SHAPE):
-        image = image.resize((imshape[0], imshape[1]), Image.LANCZOS)
-        image_np = np.array(image.getdata())
-        return image_np
+    def image_to_np(self, image):
+        image = image.resize((IMG_SIZE, IMG_SIZE), Image.LANCZOS)
+        image_np = np.array(image)
+        return np.expand_dims(image_np, axis=0)
 
     def predict(self, image):
         img_array = self.image_to_np(image)
@@ -40,7 +55,6 @@ classes = {0: 'Vazio',
 
 if __name__ == '__main__':
     model = Model()
-
 
     def image_test(path, filename):
         pil_image = Image.open(path)
@@ -56,5 +70,6 @@ if __name__ == '__main__':
                    ]
     ground_true = [1., 0., 0.]
     for ind, path in enumerate(test_images):
-        pred = predict_image(path, f'teste{ind}.jpg')
-        assert ground_true == pred
+        pred = image_test(path, f'teste{ind}.jpg')
+        # print(pred, )
+        assert ground_true[ind] == pred
