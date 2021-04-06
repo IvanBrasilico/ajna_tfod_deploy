@@ -25,7 +25,7 @@ MIN_RATIO = 2.1
 def monta_filtro(db, limit: int):
     filtro = {'metadata.contentType': 'image/jpeg',
               'metadata.dataescaneamento': {'$gte': datetime(2021, 4, 1)},
-              'metadata.predictions.reefer_bbox': {'$exists': False}}
+              'metadata.predictions.reefer.reefer_bbox': {'$exists': False}}
     cursor = db['fs.files'].find(
         filtro, {'metadata.predictions': 1}).limit(limit)[:limit]
     logging.info('Consulta ao banco efetuada.')
@@ -50,7 +50,7 @@ def update_mongo(model, db, limit=10):
         grid_out = fs.get(_id)
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
-        image = cv2.imdecode(nparr)
+        image = cv2.imdecode(nparr, cv2.CV_LOAD_IMAGE_COLOR)
         # size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
@@ -67,11 +67,11 @@ def update_mongo(model, db, limit=10):
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
         # new_preds = normalize_preds(preds, size)
-        new_predictions = [{'reefer_bbox': preds, 'class': class_label, 'score': score}]
-        logging.info({'_id': _id, 'metadata.predictions': new_predictions})
+        new_predictions = [{'reefer_bbox': preds, 'reefer_class': class_label, 'reefer_score': score}]
+        logging.info({'_id': _id, 'metadata.predictions.0.reefer': new_predictions})
         db['fs.files'].update(
             {'_id': _id},
-            {'$set': {'metadata.predictions': new_predictions}}
+            {'$set': {'metadata.predictions.0.reefer': new_predictions}}
         )
         s3 = time.time()
         logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
