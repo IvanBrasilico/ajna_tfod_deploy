@@ -11,6 +11,8 @@ from collections import Counter
 from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 sys.path.append('.')
 from motor_reefer.carrega_modelo_final_torch import Detectron2Model
@@ -32,7 +34,9 @@ def monta_filtro(db, limit: int):
     return cursor
 
 
-def update_mongo(model, db, limit=10):
+def update_mongo(model, db, engine, limit=10):
+    Session = sessionmaker(bind=engine)
+    session = Session()
     fs = GridFS(db)
     cursor = monta_filtro(db, limit)
     score_soma = 0.
@@ -41,12 +45,10 @@ def update_mongo(model, db, limit=10):
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
-        """
-        isocode_group = 'select isocode_group from ajna_conformidade where id_imagem = %s' % _id
-        if isocode_group[0] != 'R':
+        sql = f'select isocode_group from ajna_conformidade where id_imagem="{str(_id)}"'
+        isocode_group = session.execute(sql).scalar()
+        if isocode_group is None or isocode_group[0] != 'R':
             continue
-        """
-        # pred_gravado = registro.get('metadata').get('predictions')
         grid_out = fs.get(_id)
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
@@ -89,10 +91,12 @@ def update_mongo(model, db, limit=10):
 if __name__ == '__main__':
     model = Detectron2Model()
     MONGODB_URI = os.environ.get('MONGODB_URI')
+    SQL_URI = os.environ.get('SQL_URI')
     database = ''.join(MONGODB_URI.rsplit('/')[-1:])
     if not MONGODB_URI:
         MONGODB_URI = 'mongodb://localhost'
         database = 'test'
     with MongoClient(host=MONGODB_URI) as conn:
         mongodb = conn[database]
-        update_mongo(model, mongodb, 10)
+        engine = create_engine(SQL_URI)
+        update_mongo(model, mongodb, engine, 10)
