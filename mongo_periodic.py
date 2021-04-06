@@ -18,6 +18,7 @@ if not MONGODB_URI:
 
 with MongoClient(host=MONGODB_URI) as conn:
     mongodb = conn[database]
+    model = SSDModel()
     update_mongo(model, mongodb, 5000)
     s0 = time.time()
     counter = 1
