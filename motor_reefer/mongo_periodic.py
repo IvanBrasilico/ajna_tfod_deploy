@@ -1,8 +1,10 @@
 import logging
 import os
+import sys
 import time
 from pymongo import MongoClient
 
+sys.path.append('.')
 from motor_reefer.atualiza_mongo import update_mongo, FORMAT_STRING
 from motor_reefer.carrega_modelo_final_torch import Detectron2Model
 
