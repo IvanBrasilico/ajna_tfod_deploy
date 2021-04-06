@@ -50,7 +50,7 @@ def update_mongo(model, db, limit=10):
         grid_out = fs.get(_id)
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
-        image = cv2.imdecode(nparr, cv2.CV_LOAD_IMAGE_COLOR)
+        image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
         # size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
