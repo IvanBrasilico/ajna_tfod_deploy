@@ -5,6 +5,3 @@ scipy==1.5.4
 matplotlib==3.3.3
 tf-models-official==2.2.2
 pymongo
-torch==1.8.1
-torchvision==0.9.1
-#pip install detectron2 -f https://dl.fbaipublicfiles.com/detectron2/wheels/cu101/torch1.8/index.html
