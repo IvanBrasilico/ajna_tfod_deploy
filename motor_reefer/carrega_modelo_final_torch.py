@@ -29,6 +29,7 @@ class Detectron2Model():
         self.classes_names = classes_names
         self.threshold = .8
         self.cfg = get_cfg()
+        self.cfg.MODEL.DEVICE = 'cpu'
         self.predictor = self.get_predictor()
 
     def set_threshold(self, threshold):
