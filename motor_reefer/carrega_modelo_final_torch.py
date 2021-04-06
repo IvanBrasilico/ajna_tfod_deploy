@@ -1,5 +1,6 @@
 import time
-
+import torch
+device = torch.device('cpu')
 from detectron2.utils.logger import setup_logger
 
 setup_logger()
