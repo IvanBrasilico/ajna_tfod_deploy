@@ -9,7 +9,6 @@ from carrega_modelo_final import SSDModel
 
 logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 
-model = SSDModel()
 MONGODB_URI = os.environ.get('MONGODB_URI')
 database = ''.join(MONGODB_URI.rsplit('/')[-1:])
 if not MONGODB_URI:
