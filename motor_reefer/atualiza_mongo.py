@@ -1,14 +1,14 @@
+import cv2
 import io
 import logging
+import numpy as np
 import os
 import sys
 import time
-from collections import Counter
-from datetime import datetime
-
-import cv2
 from PIL import Image
 from bson import ObjectId
+from collections import Counter
+from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
@@ -48,8 +48,9 @@ def update_mongo(model, db, limit=10):
         """
         # pred_gravado = registro.get('metadata').get('predictions')
         grid_out = fs.get(_id)
-        image = grid_out.read()
-        image = cv2.imread(io.BytesIO(image))
+        img_str = grid_out.read()
+        nparr = np.fromstring(img_str, np.uint8)
+        image = cv2.imdecode(nparr)
         # size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
