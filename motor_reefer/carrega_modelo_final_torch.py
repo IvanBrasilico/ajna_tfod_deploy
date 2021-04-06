@@ -1,6 +1,6 @@
 import time
 import torch
-device = torch.device('cpu')
+# device = torch.device('cpu')
 from detectron2.utils.logger import setup_logger
 
 setup_logger()
@@ -29,7 +29,7 @@ class Detectron2Model():
         self.classes_names = classes_names
         self.threshold = .8
         self.cfg = get_cfg()
-        self.cfg.MODEL.DEVICE = 'cpu'
+        # self.cfg.MODEL.DEVICE = 'cpu'
         self.predictor = self.get_predictor()
 
     def set_threshold(self, threshold):
