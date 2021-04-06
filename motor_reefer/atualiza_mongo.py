@@ -55,9 +55,18 @@ def update_mongo(model, db, limit=10):
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
         pred_boxes, pred_classes, pred_scores = model.get_preds(image)
-        preds = pred_boxes[0]
-        class_label = pred_classes[0]
-        score = pred_scores[0]
+        if len(pred_boxes) == 0 or pred_scores[0] < .9:
+            class_label = 2
+            if len(pred_boxes) == 0:
+                preds = [0, 0, image.shape[0], image.shape[1]]
+                score = 0.
+            else:
+                preds = pred_boxes[0]
+                score = pred_scores[0]
+        else:
+            preds = pred_boxes[0]
+            class_label = pred_classes[0]
+            score = pred_scores[0]
         if score > 0.:
             score_soma += score
             contagem += 1.
