@@ -41,6 +41,11 @@ def update_mongo(model, db, limit=10):
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
+        """
+        isocode_group = 'select isocode_group from ajna_conformidade where id_imagem = %s' % _id
+        if isocode_group[0] != 'R':
+            continue
+        """
         # pred_gravado = registro.get('metadata').get('predictions')
         grid_out = fs.get(_id)
         image = grid_out.read()

@@ -23,7 +23,7 @@ class Detectron2Model():
     """[summary]
     """
 
-    def __init__(self, model_path, num_classes, classes_names):
+    def __init__(self, model_path=MODEL, num_classes=1, classes_names=['motor']):
         self.model_path = model_path
         self.num_classes = num_classes
         self.classes_names = classes_names
