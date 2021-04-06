@@ -3,18 +3,18 @@ import os
 import time
 from pymongo import MongoClient
 
-from atualiza_mongo import update_mongo, FORMAT_STRING
-from carrega_modelo_final import SSDModel
+from motor_reefer.atualiza_mongo import update_mongo, FORMAT_STRING
+from motor_reefer.carrega_modelo_final_torch import Detectron2Model
 
 
 logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 
+model = Detectron2Model()
 MONGODB_URI = os.environ.get('MONGODB_URI')
 database = ''.join(MONGODB_URI.rsplit('/')[-1:])
 if not MONGODB_URI:
     MONGODB_URI = 'mongodb://localhost'
     database = 'test'
-
 
 with MongoClient(host=MONGODB_URI) as conn:
     mongodb = conn[database]
