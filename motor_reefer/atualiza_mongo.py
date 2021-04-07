@@ -109,4 +109,4 @@ if __name__ == '__main__':
     with MongoClient(host=MONGODB_URI) as conn:
         mongodb = conn[database]
         engine = create_engine(SQL_URI)
-        update_mongo(model, mongodb, engine, 10)
+        update_mongo(model, mongodb, engine, 100)
