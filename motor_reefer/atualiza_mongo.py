@@ -1,14 +1,13 @@
-import cv2
-import io
 import logging
-import numpy as np
 import os
 import sys
 import time
-from PIL import Image
-from bson import ObjectId
 from collections import Counter
 from datetime import datetime
+
+import cv2
+import numpy as np
+from bson import ObjectId
 from gridfs import GridFS
 from pymongo import MongoClient
 from sqlalchemy import create_engine
@@ -93,8 +92,10 @@ def update_mongo(model, db, engine, limit=10):
         )
         s3 = time.time()
         logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
-    sql = f'UPDATE ajna_modelos set uploadDate=:uploadDate where modelo="motor_reefer"'
-    session.execute(sql, max_uploadDate)
+    sql = 'INSERT INTO ajna_modelos (nome, uploadDate) ' + \
+          'VALUES  ("motor_reefer", :uploadDate) ON DUPLICATE KEY UPDATE ' + \
+          'uploadDate = :uploadDate'
+    session.execute(sql, {'uploadDate': max_uploadDate})
 
 
 if __name__ == '__main__':
