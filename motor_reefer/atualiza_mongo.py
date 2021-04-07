@@ -27,7 +27,7 @@ def monta_filtro(db, session, limit: int):
     sql = f'select uploadDate from ajna_modelos where modelo="motor_reefer"'
     min_uploadDate = session.execute(sql).scalar()
     if min_uploadDate is None:
-        min_uploadDate = datetime(2021, 4, 1)
+        min_uploadDate = datetime(2021, 3, 1)
     filtro = {'metadata.contentType': 'image/jpeg',
               'uploadDate': {'$gte': min_uploadDate},
               'metadata.predictions.reefer.reefer_bbox': {'$exists': False}}
