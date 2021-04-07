@@ -28,6 +28,7 @@ def monta_filtro(db, session, limit: int):
     min_uploadDate = session.execute(sql).scalar()
     if min_uploadDate is None:
         min_uploadDate = datetime(2021, 3, 1)
+    logging.info(f'Recuperando {limit} registros a partir de {min_uploadDate}')
     filtro = {'metadata.contentType': 'image/jpeg',
               'uploadDate': {'$gte': min_uploadDate},
               'metadata.predictions.reefer.reefer_bbox': {'$exists': False}}
@@ -52,6 +53,7 @@ def update_mongo(model, db, engine, limit=10):
         sql = f'select isocode_group from ajna_conformidade where id_imagem="{str(_id)}"'
         isocode_group = session.execute(sql).scalar()
         if isocode_group is None or isocode_group[0] != 'R':
+            logging.info(f'Pulando registro {_id} por não ser reefer')
             continue
         if registro['uploadDate'] > max_uploadDate:
             max_uploadDate = registro['uploadDate']
@@ -79,7 +81,7 @@ def update_mongo(model, db, engine, limit=10):
             score_soma += score
             contagem += 1.
         if class_label is None:
-            logging.info(f'Pulando registro {_id}')
+            logging.info(f'Pulando registro {_id} porque classe veio vazia...')
             continue
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
