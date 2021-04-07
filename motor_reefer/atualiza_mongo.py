@@ -97,9 +97,8 @@ def update_mongo(model, db, engine, limit=10):
           'VALUES  ("motor_reefer", :uploadDate) ON DUPLICATE KEY UPDATE ' + \
           'uploadDate = :uploadDate'
     logging.info(f'Fazendo UPSERT no uploadDate para {max_uploadDate}: {sql}')
-    trans = session.begin()
     session.execute(sql, {'uploadDate': max_uploadDate})
-    trans.commit()
+    session.commit()
 
 
 if __name__ == '__main__':
