@@ -24,12 +24,16 @@ logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 MIN_RATIO = 2.1
 
 
-def monta_filtro(db, limit: int):
+def monta_filtro(db, session, limit: int):
+    sql = f'select uploadDate from ajna_modelos where modelo="motor_reefer"'
+    min_uploadDate = session.execute(sql).scalar()
+    if min_uploadDate is None:
+        min_uploadDate = datetime(2021, 4, 1)
     filtro = {'metadata.contentType': 'image/jpeg',
-              'metadata.dataescaneamento': {'$gte': datetime(2021, 4, 1)},
+              'uploadDate': {'$gte': min_uploadDate},
               'metadata.predictions.reefer.reefer_bbox': {'$exists': False}}
     cursor = db['fs.files'].find(
-        filtro, {'metadata.predictions': 1}).limit(limit)[:limit]
+        filtro, {'uploadDate': 1, 'metadata.predictions': 1}).limit(limit)[:limit]
     logging.info('Consulta ao banco efetuada.')
     return cursor
 
@@ -38,10 +42,11 @@ def update_mongo(model, db, engine, limit=10):
     Session = sessionmaker(bind=engine)
     session = Session()
     fs = GridFS(db)
-    cursor = monta_filtro(db, limit)
+    cursor = monta_filtro(db, session, limit)
     score_soma = 0.
     contagem = 0.001
     counter = Counter()
+    max_uploadDate = datetime(2000, 1, 1)
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
@@ -49,6 +54,8 @@ def update_mongo(model, db, engine, limit=10):
         isocode_group = session.execute(sql).scalar()
         if isocode_group is None or isocode_group[0] != 'R':
             continue
+        if registro['uploadDate'] > max_uploadDate:
+            max_uploadDate = registro['uploadDate']
         grid_out = fs.get(_id)
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
@@ -86,6 +93,8 @@ def update_mongo(model, db, engine, limit=10):
         )
         s3 = time.time()
         logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
+    sql = f'UPDATE ajna_modelos set uploadDate=:uploadDate where modelo="motor_reefer"'
+    session.execute(sql, max_uploadDate)
 
 
 if __name__ == '__main__':
