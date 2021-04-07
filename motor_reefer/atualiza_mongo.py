@@ -24,7 +24,7 @@ MIN_RATIO = 2.1
 
 
 def monta_filtro(db, session, limit: int):
-    sql = f'select uploadDate from ajna_modelos where modelo="motor_reefer"'
+    sql = f'select uploadDate from ajna_modelos where nome="motor_reefer"'
     min_uploadDate = session.execute(sql).scalar()
     if min_uploadDate is None:
         min_uploadDate = datetime(2021, 3, 1)
