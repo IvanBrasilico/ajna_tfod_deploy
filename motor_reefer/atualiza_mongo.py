@@ -45,18 +45,17 @@ def update_mongo(model, db, engine, limit=10):
     cursor = monta_filtro(db, session, limit)
     score_soma = 0.
     contagem = 0.001
-    counter = Counter()
     max_uploadDate = datetime(2000, 1, 1)
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
         sql = f'select isocode_group from ajna_conformidade where id_imagem="{str(_id)}"'
         isocode_group = session.execute(sql).scalar()
+        if registro['uploadDate'] > max_uploadDate:
+            max_uploadDate = registro['uploadDate']
         if isocode_group is None or isocode_group[0] != 'R':
             logging.info(f'Pulando registro {_id} por não ser reefer')
             continue
-        if registro['uploadDate'] > max_uploadDate:
-            max_uploadDate = registro['uploadDate']
         grid_out = fs.get(_id)
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
@@ -97,6 +96,7 @@ def update_mongo(model, db, engine, limit=10):
     sql = 'INSERT INTO ajna_modelos (nome, uploadDate) ' + \
           'VALUES  ("motor_reefer", :uploadDate) ON DUPLICATE KEY UPDATE ' + \
           'uploadDate = :uploadDate'
+    logging.info(f'Fazendo UPSERT no uploadDate para {max_uploadDate}: {sql}')
     session.execute(sql, {'uploadDate': max_uploadDate})
 
 
