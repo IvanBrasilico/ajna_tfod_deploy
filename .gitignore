@@ -2,4 +2,5 @@
 /models/efficientdet_d1
 /venv/
 /venv_tf23/
-
+model_final*
+bases/
