@@ -58,15 +58,8 @@ class Detectron2Model():
         return DefaultPredictor(self.cfg)
 
     @staticmethod
-    def get_preds(predictor: object, image_path: str):
-        """[summary]
+    def predict(predictor: object, image_path: str):
 
-        Args:
-            image ([type]): [description]
-
-        Returns:
-            [type]: [description]
-        """
         image = cv2.imread(image_path)
 
         pred_boxes, pred_classes, pred_scores = list(), list(), list()
@@ -150,7 +143,7 @@ if __name__ == '__main__':
 
         for filename in os.listdir(image_path):
 
-            preds = model.get_preds(predictor, os.path.join(image_path, filename))
+            preds = model.predict(predictor, os.path.join(image_path, filename))
         
             if preds:
 
