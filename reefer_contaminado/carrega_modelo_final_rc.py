@@ -1,5 +1,7 @@
 # TODO: Descomentar abaixo para rodar inferência na CPU
 # os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+import os.path
+
 import tensorflow as tf
 
 # TODO: Para tensorflow não comer toda a memória
@@ -48,7 +50,7 @@ class ModelContaminado():
         img_array = self.image_to_np(image)
         prediction = self.model.predict(img_array)
         # Retorna True se contaminado e False se não contaminado
-        return float(prediction[0]) > .5
+        return float(prediction[0]) < .5
 
 
 classes = {0: 'Nao contaminado',
@@ -57,21 +59,21 @@ classes = {0: 'Nao contaminado',
 if __name__ == '__main__':
     model = ModelContaminado()
 
-    def image_test(path, filename):
+    def image_test(path):
         pil_image = Image.open(path)
         pil_image = pil_image.convert('RGB')
         pred = model.predict(pil_image)
         print(f'Resultado de Image {path}: {pred}')
         return pred
 
-
+    base_path = os.path.dirname(__file__)
     test_images = ['tests/HLXU6772322 A.jpg',
                    'tests/TEMU9131666 B.jpg',
                    'tests/60180ede0be94217a2cf91d5.jpg',
                    'tests/60180d8d0be94217a2cf6b47.jpg'
                    ]
     ground_true = [True, True, False, False]
-    for ind, path in enumerate(test_images):
-        pred = image_test(path, f'teste{ind}.jpg')
-        # print(pred, )
+    for ind, imgname in enumerate(test_images):
+        pred = image_test(os.path.join(base_path, imgname))
+        print(pred, ground_true[ind])
         assert ground_true[ind] == pred

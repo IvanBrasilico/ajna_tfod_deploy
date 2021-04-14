@@ -10,6 +10,8 @@ from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
+from reefer_contaminado.carrega_modelo_final_rc import ModelContaminado
+
 logging.basicConfig(level=logging.DEBUG)
 
 MIN_RATIO = 2.1
