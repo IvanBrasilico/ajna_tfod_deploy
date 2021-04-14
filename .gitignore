@@ -3,3 +3,7 @@
 /venv/
 /venv_tf23/
 
+/models/detectron2_fastcnn/model_final_ciclo03.pth
+/teste2.jpg
+/teste2_original.jpg
+/testes.py
