@@ -40,6 +40,8 @@ def update_mongo(model, db, limit=10):
         image = grid_out.read()
         pil_image = Image.open(io.BytesIO(image))
         pil_image = pil_image.convert('RGB')
+        bbox = registro['metadata']['predictions'][0]['reefer']['reefer_bbox']
+        pil_image = pil_image.crop(bbox[0], bbox[1], bbox[2], bbox[3])
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
         pred = model.predict(pil_image)
