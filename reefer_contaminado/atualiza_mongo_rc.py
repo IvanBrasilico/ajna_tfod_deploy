@@ -27,6 +27,15 @@ def monta_filtro(db, limit: int):
     logging.info('Consulta ao banco efetuada.')
     return cursor
 
+def recupera_imagem():
+    grid_out = fs.get(_id)
+    image = grid_out.read()
+    pil_image = Image.open(io.BytesIO(image))
+    pil_image = pil_image.convert('RGB')
+    bbox = registro['metadata']['predictions'][0]['reefer']['reefer_bbox']
+    pil_image = pil_image.crop(bbox[0], bbox[1], bbox[2], bbox[3])
+    return pil_image
+
 
 def update_mongo(model, db, limit=10):
     fs = GridFS(db)
@@ -36,12 +45,6 @@ def update_mongo(model, db, limit=10):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
         # pred_gravado = registro.get('metadata').get('predictions')
-        grid_out = fs.get(_id)
-        image = grid_out.read()
-        pil_image = Image.open(io.BytesIO(image))
-        pil_image = pil_image.convert('RGB')
-        bbox = registro['metadata']['predictions'][0]['reefer']['reefer_bbox']
-        pil_image = pil_image.crop(bbox[0], bbox[1], bbox[2], bbox[3])
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
         pred = model.predict(pil_image)
