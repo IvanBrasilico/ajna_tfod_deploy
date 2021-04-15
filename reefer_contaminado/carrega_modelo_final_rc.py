@@ -18,7 +18,8 @@ from tensorflow.keras import layers
 
 
 IMG_SIZE = 380
-MODEL = 'models/efficientnetb4/contaminados_ciclo0.h5'
+base_path = os.path.dirname(__file__)
+MODEL = os.path.join(base_path, '..', 'models', 'efficientnetb4', 'contaminados_ciclo0.h5')
 
 
 def build_model():
