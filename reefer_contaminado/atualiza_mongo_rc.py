@@ -17,6 +17,61 @@ logging.basicConfig(level=logging.DEBUG)
 MIN_RATIO = 2.1
 
 
+class ModelStamp():
+    """Comportamento padrão para facilitar comunicação modelos-bancos de dados.
+
+    Implementa verbos como
+
+    get_cursor_sem: retorna cursor com registros para gravar predições do modelo
+    get_cursor_com: retorna cursor com registros que já tem predições do modelo
+    get_imagem: retorna imagem ja com tratamentos que o modelo precisa
+    update_db: pega "limit" registros do cursor_sem, roda predições e grava no campo correto.
+
+    """
+    # PLACEHOLDERS - Constantes que precisam ser definidas pelas classes filhas
+    FILTRO = {'metadata.contentType': 'image/jpeg'}
+
+    def __init__(self, model, mongodb, sqlsession=None, limit=10):
+        """
+
+        Args:
+            model: modelo para predição, com método predict que recebe imagem e retorna
+            a predição pronta para ser gravada no MongoDB
+            mongodb: conexão ao banco MongoDB
+            sqlsession: conexão ao banco MySQL
+            limit: quantidade de registros a limitar no cursor
+        """
+        self.model = model
+        self.mongodb = mongodb
+        self.sqlsession = sqlsession
+        self.limit = limit
+        self.set_filtro(datetime(2020, 12, 16))
+
+    def set_filtro(self, datainicio):
+        """Filtro básico. Nas classes filhas adicionar campos."""
+        self.filtro = FILTRO
+        self.filtro['metadata.dataescaneamento'] = {'$gte': datainicio}
+
+    def update_filtro(self, filtro_adicional: dict):
+        self.filtro.update(filtro_adicional)
+
+
+    def get_cursor(self):
+        cursor = db['fs.files'].find(self.filtro,
+            filtro, {'metadata.predictions': 1}).limit(self.limit)[:self.limit]
+        logging.info('Consulta ao banco efetuada.')
+        return cursor
+
+    def get_image(db, _id: ObjectId, bbox):
+        fs = GridFS(db)
+        grid_out = fs.get(_id)
+        image = grid_out.read()
+        pil_image = Image.open(io.BytesIO(image))
+        pil_image = pil_image.convert('RGB')
+        pil_image = pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
+        return pil_image
+
+
 def monta_filtro(db, limit: int):
     filtro = {'metadata.contentType': 'image/jpeg',
               'metadata.dataescaneamento': {'$gte': datetime(2020, 12, 16)},
@@ -27,24 +82,24 @@ def monta_filtro(db, limit: int):
     logging.info('Consulta ao banco efetuada.')
     return cursor
 
-def recupera_imagem():
+
+def recupera_imagem(db, _id: ObjectId, bbox):
+    fs = GridFS(db)
     grid_out = fs.get(_id)
     image = grid_out.read()
     pil_image = Image.open(io.BytesIO(image))
     pil_image = pil_image.convert('RGB')
-    bbox = registro['metadata']['predictions'][0]['reefer']['reefer_bbox']
-    pil_image = pil_image.crop(bbox[0], bbox[1], bbox[2], bbox[3])
+    pil_image = pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
     return pil_image
 
 
 def update_mongo(model, db, limit=10):
-    fs = GridFS(db)
     cursor = monta_filtro(db, limit)
     counter = Counter()
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
-        # pred_gravado = registro.get('metadata').get('predictions')
+        pil_image = recupera_imagem(_id)
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
         pred = model.predict(pil_image)
