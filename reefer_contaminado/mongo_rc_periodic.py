@@ -3,7 +3,7 @@ import os
 import time
 from pymongo import MongoClient
 
-from atualiza_mongo_rc import update_mongo
+from atualiza_mongo_rc import ComunicaReeeferContaminado
 from carrega_modelo_final_rc import ModelContaminado
 
 logging.basicConfig(level=logging.DEBUG)
