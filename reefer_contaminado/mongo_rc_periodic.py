@@ -18,7 +18,8 @@ model = ModelContaminado()
 
 with MongoClient(host=MONGODB_URI) as conn:
     mongodb = conn[database]
-    update_mongo(model, mongodb, 5000)
+    comunica = ComunicaReeeferContaminado(model, mongodb, 5000)
+    comunica.update_mongo()
     s0 = time.time()
     counter = 1
     while True:
@@ -28,5 +29,6 @@ with MongoClient(host=MONGODB_URI) as conn:
         if time.time() - s0 > 60 * 10:
             logging.info('Periódico chamado rodada %s' % counter)
             counter += 1
-            update_mongo(model, mongodb, 2000)
+            comunica = ComunicaReeeferContaminado(model, mongodb, 2000)
+            comunica.update_mongo()
             s0 = time.time()

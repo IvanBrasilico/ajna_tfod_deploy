@@ -10,6 +10,7 @@ from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
+sys.path.append('.')
 from reefer_contaminado.carrega_modelo_final_rc import ModelContaminado
 
 logging.basicConfig(level=logging.DEBUG)
@@ -17,7 +18,7 @@ logging.basicConfig(level=logging.DEBUG)
 MIN_RATIO = 2.1
 
 
-class ModelStamp():
+class Comunica():
     """Comportamento padrão para facilitar comunicação modelos-bancos de dados.
 
     Implementa verbos como
@@ -30,6 +31,8 @@ class ModelStamp():
     """
     # PLACEHOLDERS - Constantes que precisam ser definidas pelas classes filhas
     FILTRO = {'metadata.contentType': 'image/jpeg'}
+    CAMPO_ATUALIZADO = 'metadata.predictions.0'
+    DATA_INICIAL = datetime(2020, 12, 16)
 
     def __init__(self, model, mongodb, sqlsession=None, limit=10):
         """
@@ -45,77 +48,65 @@ class ModelStamp():
         self.mongodb = mongodb
         self.sqlsession = sqlsession
         self.limit = limit
-        self.set_filtro(datetime(2020, 12, 16))
+        self.campo_a_atualizar = self.CAMPO_ATUALIZADO
+        self.set_filtro(self.DATA_INICIAL)
+        self.set_cursor()
 
     def set_filtro(self, datainicio):
         """Filtro básico. Nas classes filhas adicionar campos."""
-        self.filtro = FILTRO
+        self.filtro = self.FILTRO
         self.filtro['metadata.dataescaneamento'] = {'$gte': datainicio}
 
     def update_filtro(self, filtro_adicional: dict):
         self.filtro.update(filtro_adicional)
 
-
-    def get_cursor(self):
-        cursor = db['fs.files'].find(self.filtro,
-            filtro, {'metadata.predictions': 1}).limit(self.limit)[:self.limit]
+    def set_cursor(self):
+        self.cursor = self.mongodb['fs.files'].find(self.filtro,
+                                                    {'metadata.predictions': 1}
+                                                    ).limit(self.limit)[:self.limit]
         logging.info('Consulta ao banco efetuada.')
-        return cursor
 
-    def get_image(db, _id: ObjectId, bbox):
-        fs = GridFS(db)
-        grid_out = fs.get(_id)
-        image = grid_out.read()
-        pil_image = Image.open(io.BytesIO(image))
-        pil_image = pil_image.convert('RGB')
-        pil_image = pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
-        return pil_image
+    def get_pil_image(self, _id: ObjectId):
+        fs = GridFS(self.mongodb)
+        self.grid_out = fs.get(_id)
+        self.image = self.grid_out.read()
+        pil_image = Image.open(io.BytesIO(self.image))
+        self.pil_image = pil_image.convert('RGB')
+        return self.pil_image
+
+    def update_mongo(self):
+        for ind, registro in enumerate(self.cursor):
+            s0 = time.time()
+            _id = ObjectId(registro['_id'])
+            pil_image = self.get_pil_image(_id)
+            s1 = time.time()
+            logging.info(f'Elapsed retrieve time {s1 - s0}')
+            pred = self.model.predict(pil_image)
+            s2 = time.time()
+            logging.info(f'Elapsed model time {s2 - s1}.')
+            logging.info({'_id': _id, 'pred': pred})
+            self.mongodb['fs.files'].update(
+                {'_id': _id},
+                {'$set': {self.campo_a_atualizar: pred}}
+            )
+            s3 = time.time()
+            logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
 
 
-def monta_filtro(db, limit: int):
-    filtro = {'metadata.contentType': 'image/jpeg',
-              'metadata.dataescaneamento': {'$gte': datetime(2020, 12, 16)},
+class ComunicaReeeferContaminado(Comunica):
+    FILTRO = {'metadata.contentType': 'image/jpeg',
               'metadata.predictions.reefer.reefer_bbox': {'$exists': True},
               'metadata.predictions.reefer.reefer_contaminado': {'$exists': False}}
-    cursor = db['fs.files'].find(
-        filtro, {'metadata.predictions': 1}).limit(limit)[:limit]
-    logging.info('Consulta ao banco efetuada.')
-    return cursor
+    CAMPO_ATUALIZADO = 'metadata.predictions.0.reefer.0.reefer_contaminado'
 
-
-def recupera_imagem(db, _id: ObjectId, bbox):
-    fs = GridFS(db)
-    grid_out = fs.get(_id)
-    image = grid_out.read()
-    pil_image = Image.open(io.BytesIO(image))
-    pil_image = pil_image.convert('RGB')
-    pil_image = pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
-    return pil_image
-
-
-def update_mongo(model, db, limit=10):
-    cursor = monta_filtro(db, limit)
-    counter = Counter()
-    for ind, registro in enumerate(cursor):
-        s0 = time.time()
-        _id = ObjectId(registro['_id'])
-        pil_image = recupera_imagem(_id)
-        s1 = time.time()
-        logging.info(f'Elapsed retrieve time {s1 - s0}')
-        pred = model.predict(pil_image)
-        s2 = time.time()
-        logging.info(f'Elapsed model time {s2 - s1}.')
-        logging.info({'_id': _id, 'vazio': pred})
-        db['fs.files'].update(
-            {'_id': _id},
-            {'$set': {'metadata.predictions.0.reefer.reefer_contaminado': pred}}
-        )
-        s3 = time.time()
-        logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
+    def get_pil_image(self, _id: ObjectId):
+        super().get_pil_image(_id)
+        bbox = self.grid_out.metadata['predictions'][0]['reefer'][0]['reefer_bbox']
+        self.pil_image = self.pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
+        return self.pil_image
 
 
 if __name__ == '__main__':
-    model = ModelContaminado()
     MONGODB_URI = os.environ.get('MONGODB_URI')
     database = ''.join(MONGODB_URI.rsplit('/')[-1:])
     if not MONGODB_URI:
@@ -123,4 +114,6 @@ if __name__ == '__main__':
         database = 'test'
     with MongoClient(host=MONGODB_URI) as conn:
         mongodb = conn[database]
-        update_mongo(model, mongodb, 10)
+        model = ModelContaminado()
+        comunica = ComunicaReeeferContaminado(model, mongodb)
+        comunica.update_mongo()
