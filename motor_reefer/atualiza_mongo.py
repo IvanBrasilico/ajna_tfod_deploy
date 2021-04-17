@@ -67,7 +67,7 @@ def update_mongo(model, db, engine, limit=10):
         if len(pred_boxes) == 0 or pred_scores[0] < .9:
             class_label = 2
             if len(pred_boxes) == 0:
-                preds = [0, 0, image.shape[0], image.shape[1]]
+                preds = [0, 0, image.shape[1], image.shape[0]]
                 score = 0.
             else:
                 preds = pred_boxes[0]
