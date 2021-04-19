@@ -20,12 +20,10 @@ import os, cv2
 
 MODEL = 'models/detectron2_fastcnn/model_final_ciclo03.pth'
 MODEL2 = 'C://Users//94512868372//Downloads//joel_ciclo04_detectron2_reefer_19_04_2021//model_final_ciclo04.pth'
-MODEL_2CLASSES_PATH = '/home/jap05/Projects/ajna_tfod_deploy/motor_reefer/checkpoints/model_final_ciclo02.pth'
 
 class Detectron2Model():
     """[summary]
     """
-
     def __init__(self, model_path, num_classes, classes_names):
         self.model_path = model_path
         self.num_classes = num_classes
@@ -43,9 +41,7 @@ class Detectron2Model():
         """
         self.threshold = threshold
 
-
     def get_predictor(self):
-
         # Must be same as model trained in.
         self.cfg.merge_from_file(model_zoo.get_config_file("COCO-Detection/faster_rcnn_X_101_32x8d_FPN_3x.yaml"))
         # Path to saved model weights (trained model)
@@ -62,31 +58,22 @@ class Detectron2Model():
     def predict(predictor: object, image_path: str):
 
         image = cv2.imread(image_path)
-
         pred_boxes, pred_classes, pred_scores = list(), list(), list()
-
         predictions = predictor(image)['instances'].to('cpu')
-
         if predictions:
-                
             pred_fields = predictions.get_fields()
-            
             pred_boxes = [tensor.tolist() for tensor in list(pred_fields['pred_boxes'])]
             pred_classes = pred_fields['pred_classes'].tolist()
             pred_scores = pred_fields['scores'].tolist()
-
             return pred_boxes, pred_classes, pred_scores
 
     def plot_detections(self, image):
 
         if isinstance(image, str):
             image = cv2.imread(image)
-
         outputs = self.predict(image)
-
         test_metadata = MetadataCatalog.get('my_dataset_test')
         test_metadata.thing_classes = self.classes_names
-
         v = Visualizer(image[:, :, ::-1], metadata=test_metadata, scale=0.4)
         out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
         plt.imshow(out.get_image()[:, :, ::-1])
@@ -101,40 +88,27 @@ class Detectron2Model():
         Returns:
             [type]: [description]
         """
-
         try:
             pred_boxes, pred_classes, _ = self.get_preds(image_path)
-        
-           
             img = Image.open(image_path)
-
             cropped_images = defaultdict(list)
-
             for bbox, classe in zip(pred_boxes, pred_classes):
                 crop = img.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
                 cropped_images[classe].append(crop)
-
             if output_path:
-                image_name, ext = os.path.splitext(os.path.basename(image_path))
-        
+                image_name, ext = os.path.splitext(os.path.basename(image_path))    
                 if not os.path.exists(output_path):
                     os.mkdir(output_path)
                 for classe, bboxes  in cropped_images.items():
                     classe_folder = os.path.join(output_path, str(classe))
                     if not os.path.exists(classe_folder):
                         os.mkdir(classe_folder)
-
                     for bbox in bboxes:
                         bbox.save(os.path.join(classe_folder, image_name + str(ext)))
-
             crops = [np.asarray(el) for crop in cropped_images.values() for el in crop]
-
             return crops[0] if len(crops) > 0 else crops
-        
         except TypeError:
-            
             print(f"No preds for image {image_path.split('/')[-1]}. Try a threshold less then {self.threshold}")
-
 
 # TODO fazer deploy em Flask
 
