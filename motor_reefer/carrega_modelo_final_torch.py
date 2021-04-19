@@ -174,55 +174,5 @@ if __name__ == '__main__':
         assert sum([abs(item_pred - item_groung_truth)
                     for item_pred, item_groung_truth in zip(pred_boxes[0], ground_true_bbox[ind])]) < 24
 
-   """ 
-    def do_contaminado(predictor, image_path):
 
-        for filename in os.listdir(image_path):
-
-            preds = model.predict(predictor, os.path.join(image_path, filename))
-        
-            if preds:
-
-                pred_boxes, pred_classes, pred_scores = preds
-                if pred_classes[0] == 0:
-                    print('')
-                    print(f'Motor Limpo!')
-                    print(f'coordenadas: {pred_boxes[0]}')
-                    print(f'Score: {pred_scores[0]:.2f}')
-
-                else:
-                    print('')
-                    print(f'>>>>Motor Contaminado!<<<<<')
-                    print(f'coordenadas: {pred_boxes[0]}')
-                    print(f'Score: {pred_scores[0]:.2f}')               
-
-            else:
-                print('')
-                print(f'No preds for image: {filename} with threshold {model.threshold}')
-    """
-    
     ##################### 1 Classe ####################################################
-    
-
-    """
-   #####################  2Classes ###################################################
-
-    saved_model_path = 'C://Users//94512868372//Downloads//joel_ciclo04_detectron2_reefer_19_04_2021//model_final_ciclo04.pth'
-    num_classes = 2
-    classes_names = ['vazio', 'nvazio']
-
-    model = Detectron2Model(
-
-        model_path=saved_model_path,
-        num_classes=num_classes,
-        classes_names=classes_names
-    )
-    
-    model.set_threshold(.6)
-
-    images_path = [PATH_TO_IMAGES]
-
-    predictor = model.get_predictor()
-
-    do_contaminado(predictor, images_path)
-
