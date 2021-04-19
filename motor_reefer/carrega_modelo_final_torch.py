@@ -162,10 +162,12 @@ if __name__ == '__main__':
     s0 = time.time()
     print(f'{s0 - s} segundos para inicialização')
 
+    predictor = model.get_predictor()
+
     for ind, path in enumerate(test_images):
         print(f'Test Image {ind}')
         image = cv2.imread(path)
-        pred_boxes, pred_classes, pred_scores = model.get_preds(image)
+        pred_boxes, pred_classes, pred_scores = model.predict(predictor, image)
         print(pred_boxes)
         print(pred_classes)
         print(pred_scores)
