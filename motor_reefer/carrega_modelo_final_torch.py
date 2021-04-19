@@ -139,35 +139,7 @@ class Detectron2Model():
 # TODO fazer deploy em Flask
 
 if __name__ == '__main__':
-   """ 
-    def do_contaminado(predictor, image_path):
 
-        for filename in os.listdir(image_path):
-
-            preds = model.predict(predictor, os.path.join(image_path, filename))
-        
-            if preds:
-
-                pred_boxes, pred_classes, pred_scores = preds
-                if pred_classes[0] == 0:
-                    print('')
-                    print(f'Motor Limpo!')
-                    print(f'coordenadas: {pred_boxes[0]}')
-                    print(f'Score: {pred_scores[0]:.2f}')
-
-                else:
-                    print('')
-                    print(f'>>>>Motor Contaminado!<<<<<')
-                    print(f'coordenadas: {pred_boxes[0]}')
-                    print(f'Score: {pred_scores[0]:.2f}')               
-
-            else:
-                print('')
-                print(f'No preds for image: {filename} with threshold {model.threshold}')
-    """
-    
-    ##################### 1 Classe ####################################################
-    
     saved_model_path = MODEL2
     num_classes = 1
     classes_names = ['motor']
@@ -201,7 +173,37 @@ if __name__ == '__main__':
         print(f'{s1 - s0} segundos para predição')
         assert sum([abs(item_pred - item_groung_truth)
                     for item_pred, item_groung_truth in zip(pred_boxes[0], ground_true_bbox[ind])]) < 24
+
+   """ 
+    def do_contaminado(predictor, image_path):
+
+        for filename in os.listdir(image_path):
+
+            preds = model.predict(predictor, os.path.join(image_path, filename))
+        
+            if preds:
+
+                pred_boxes, pred_classes, pred_scores = preds
+                if pred_classes[0] == 0:
+                    print('')
+                    print(f'Motor Limpo!')
+                    print(f'coordenadas: {pred_boxes[0]}')
+                    print(f'Score: {pred_scores[0]:.2f}')
+
+                else:
+                    print('')
+                    print(f'>>>>Motor Contaminado!<<<<<')
+                    print(f'coordenadas: {pred_boxes[0]}')
+                    print(f'Score: {pred_scores[0]:.2f}')               
+
+            else:
+                print('')
+                print(f'No preds for image: {filename} with threshold {model.threshold}')
+    """
     
+    ##################### 1 Classe ####################################################
+    
+
     """
    #####################  2Classes ###################################################
 
