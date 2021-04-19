@@ -19,6 +19,7 @@ import os, cv2
 
 
 MODEL = 'models/detectron2_fastcnn/model_final_ciclo03.pth'
+MODEL2 = 'C://Users//94512868372//Downloads//joel_ciclo04_detectron2_reefer_19_04_2021//model_final_ciclo04.pth'
 MODEL_2CLASSES_PATH = '/home/jap05/Projects/ajna_tfod_deploy/motor_reefer/checkpoints/model_final_ciclo02.pth'
 
 class Detectron2Model():
@@ -138,7 +139,7 @@ class Detectron2Model():
 # TODO fazer deploy em Flask
 
 if __name__ == '__main__':
-    
+   """ 
     def do_contaminado(predictor, image_path):
 
         for filename in os.listdir(image_path):
@@ -163,11 +164,11 @@ if __name__ == '__main__':
             else:
                 print('')
                 print(f'No preds for image: {filename} with threshold {model.threshold}')
-
+    """
     
     ##################### 1 Classe ####################################################
-    """
-    saved_model_path = MODEL
+    
+    saved_model_path = MODEL2
     num_classes = 1
     classes_names = ['motor']
 
@@ -179,6 +180,8 @@ if __name__ == '__main__':
         classes_names=classes_names
     )
     
+    model.set_threshold(.9)
+
     ground_true_bbox = [[122, 21, 210, 637],
                         [122, 21, 210, 637]]
     test_images = ['test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
@@ -198,10 +201,11 @@ if __name__ == '__main__':
         print(f'{s1 - s0} segundos para predição')
         assert sum([abs(item_pred - item_groung_truth)
                     for item_pred, item_groung_truth in zip(pred_boxes[0], ground_true_bbox[ind])]) < 24
+    
     """
    #####################  2Classes ###################################################
 
-    saved_model_path = [PATH_TO_SAVED_MODEL]
+    saved_model_path = 'C://Users//94512868372//Downloads//joel_ciclo04_detectron2_reefer_19_04_2021//model_final_ciclo04.pth'
     num_classes = 2
     classes_names = ['vazio', 'nvazio']
 
