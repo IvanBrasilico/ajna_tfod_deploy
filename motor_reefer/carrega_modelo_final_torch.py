@@ -151,7 +151,7 @@ if __name__ == '__main__':
         print(f'Score: {round(pred_scores[0] * 100, 2)}%\n')
         s1 = time.time()
         print(f'{s1 - s0} segundos para predição')
-
+        model.crop(path, '../test/motor_somente_imgs')
         #assert sum([abs(item_pred - item_groung_truth)
         #            for item_pred, item_groung_truth in zip(pred_boxes[0], ground_true_bbox[ind])]) < 24
 
