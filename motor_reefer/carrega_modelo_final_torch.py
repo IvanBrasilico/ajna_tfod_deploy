@@ -130,17 +130,19 @@ if __name__ == '__main__':
     
     model.set_threshold(.9)
 
-    ground_true_bbox = [[122, 21, 210, 637],
+    ground_true_bbox = [[135, 21, 210, 637],
                         [122, 21, 210, 637]]
     test_images = ['test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
                    'test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg']
+
+    images_path = 'test/motor_somente_imgs/'
 
     s0 = time.time()
     print(f'{s0 - s} segundos para inicialização')
 
     predictor = model.get_predictor()
 
-    for ind, path in enumerate(test_images):
+    for ind, path in enumerate(os.listdir(images_path)):
         print(f'Test Image {ind}\n')
         image = cv2.imread(path)
         pred_boxes, pred_classes, pred_scores = model.predict(predictor, image)
