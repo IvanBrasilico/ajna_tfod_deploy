@@ -134,8 +134,8 @@ if __name__ == '__main__':
 
     ground_true_bbox = [[122, 21, 210, 637],
                         [122, 21, 210, 637]]
-    test_images = ['test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
-                   'test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg']
+    test_images = ['../test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
+                   '../test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg']
 
     s0 = time.time()
     print(f'{s0 - s} segundos para inicialização')
