@@ -46,6 +46,9 @@ def update_mongo(model, db, engine, limit=10):
     score_soma = 0.
     contagem = 0.001
     max_uploadDate = datetime(2000, 1, 1)
+
+    predictor = model.get_predictor()
+
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
@@ -63,7 +66,9 @@ def update_mongo(model, db, engine, limit=10):
         # size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
-        pred_boxes, pred_classes, pred_scores = model.get_preds(image)
+         
+        pred_boxes, pred_classes, pred_scores = model.predict(predictor, image)
+        
         if len(pred_boxes) == 0 or pred_scores[0] < .9:
             class_label = 2
             if len(pred_boxes) == 0:
