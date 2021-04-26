@@ -18,8 +18,8 @@ from PIL import Image
 import os, cv2
 
 
-MODEL = 'models/detectron2_fastcnn/model_final_ciclo03.pth'
-MODEL2 = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
+MODEL = '../models/detectron2_fastcnn/model_final_ciclo03.pth'
+MODEL2 = '../models/detectron2_fastcnn/model_final_ciclo04.pth'
 
 class Detectron2Model():
     """[summary]
