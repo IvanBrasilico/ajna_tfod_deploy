@@ -24,7 +24,7 @@ MODEL2 = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
 class Detectron2Model():
     """[summary]
     """
-    def __init__(self, model_path, num_classes, classes_names):
+    def __init__(self, model_path=MODEL2, num_classes=1, classes_names=['motor']):
         self.model_path = model_path
         self.num_classes = num_classes
         self.classes_names = classes_names
@@ -122,11 +122,7 @@ if __name__ == '__main__':
 
     s = time.time()
     
-    model = Detectron2Model(
-        model_path=saved_model_path,
-        num_classes=num_classes,
-        classes_names=classes_names
-    )
+    model = Detectron2Model()
     
     model.set_threshold(.9)
 
@@ -137,8 +133,6 @@ if __name__ == '__main__':
                     'test/motor_somente_imgs/CBHU2827915 A.jpg',
                     'test/motor_somente_imgs/HLBU9065305 B.jpg'
                    ]
-
-    images_path = 'test/motor_somente_imgs/'
 
     s0 = time.time()
     print(f'{s0 - s} segundos para inicialização')

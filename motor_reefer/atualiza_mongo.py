@@ -102,7 +102,13 @@ def update_mongo(model, db, engine, limit=10):
 
 
 if __name__ == '__main__':
+    
+    #saved_model_path = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
+    #num_classes = 1
+    #classes_names = ['motor']
+
     model = Detectron2Model()
+
     MONGODB_URI = os.environ.get('MONGODB_URI')
     SQL_URI = os.environ.get('SQL_URI')
     database = ''.join(MONGODB_URI.rsplit('/')[-1:])
