@@ -132,8 +132,11 @@ if __name__ == '__main__':
 
     ground_true_bbox = [[135, 21, 210, 637],
                         [122, 21, 210, 637]]
-    test_images = ['test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
-                   'test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg']
+    test_images = [
+                    'test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
+                    'test/motor_somente_imgs/CBHU2827915 A.jpg',
+                    'test/motor_somente_imgs/HLBU9065305 B.jpg'
+                   ]
 
     images_path = 'test/motor_somente_imgs/'
 
@@ -142,10 +145,9 @@ if __name__ == '__main__':
 
     predictor = model.get_predictor()
 
-    for ind, filename in enumerate(os.listdir(images_path)):
+    for ind, path in enumerate(os.listdir(images_path)):
         print(f'Test Image {ind}\n')
-        img_path = os.path.join(images_path, filename)
-        image = cv2.imread(img_path)
+        image = cv2.imread(path)
         pred_boxes, pred_classes, pred_scores = model.predict(predictor, image)
         print(f'Reefer bbox: {pred_boxes[0]}')
         print(f'Classe: {pred_classes}')
@@ -153,7 +155,7 @@ if __name__ == '__main__':
         s1 = time.time()
         print(f'{s1 - s0} segundos para predição')
         # crop to check
-        model.crop(predictor, img_path, f'test/motor_somente_imgs')
+        model.crop(predictor, path, f'test/motor_somente_imgs')
         #assert sum([abs(item_pred - item_groung_truth)
         #            for item_pred, item_groung_truth in zip(pred_boxes[0], ground_true_bbox[ind])]) < 24
 
