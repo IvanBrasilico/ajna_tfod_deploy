@@ -18,8 +18,8 @@ from PIL import Image
 import os, cv2
 
 
-MODEL = '../models/detectron2_fastcnn/model_final_ciclo03.pth'
-MODEL2 = '../models/detectron2_fastcnn/model_final_ciclo04.pth'
+MODEL = 'models/detectron2_fastcnn/model_final_ciclo03.pth'
+MODEL2 = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
 
 class Detectron2Model():
     """[summary]
@@ -81,7 +81,7 @@ class Detectron2Model():
         out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
         plt.imshow(out.get_image()[:, :, ::-1])
 
-    def crop(self, image_path: str, output_path: str = None):
+    def crop(self, predictor: object, image_path: str, output_path: str = None):
         """[summary]
 
         Args:
@@ -91,27 +91,25 @@ class Detectron2Model():
         Returns:
             [type]: [description]
         """
-        try:
-            pred_boxes, pred_classes, _ = self.get_preds(image_path)
-            img = Image.open(image_path)
-            cropped_images = defaultdict(list)
-            for bbox, classe in zip(pred_boxes, pred_classes):
-                crop = img.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
-                cropped_images[classe].append(crop)
-            if output_path:
-                image_name, ext = os.path.splitext(os.path.basename(image_path))    
-                if not os.path.exists(output_path):
-                    os.mkdir(output_path)
-                for classe, bboxes  in cropped_images.items():
-                    classe_folder = os.path.join(output_path, str(classe))
-                    if not os.path.exists(classe_folder):
-                        os.mkdir(classe_folder)
-                    for bbox in bboxes:
-                        bbox.save(os.path.join(classe_folder, image_name + str(ext)))
-            crops = [np.asarray(el) for crop in cropped_images.values() for el in crop]
-            return crops[0] if len(crops) > 0 else crops
-        except TypeError:
-            print(f"No preds for image {image_path.split('/')[-1]}. Try a threshold less then {self.threshold}")
+        pred_boxes, pred_classes, _ = self.predict(predictor, image_path)
+        img = Image.open(image_path)
+        cropped_images = defaultdict(list)
+        for bbox, classe in zip(pred_boxes, pred_classes):
+            crop = img.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
+            cropped_images[classe].append(crop)
+        if output_path:
+            image_name, ext = os.path.splitext(os.path.basename(image_path))    
+            if not os.path.exists(output_path):
+                os.mkdir(output_path)
+            for classe, bboxes  in cropped_images.items():
+                classe_folder = os.path.join(output_path, str(classe))
+                if not os.path.exists(classe_folder):
+                    os.mkdir(classe_folder)
+                for bbox in bboxes:
+                    bbox.save(os.path.join(classe_folder, image_name + str(ext)))
+        crops = [np.asarray(el) for crop in cropped_images.values() for el in crop]
+        return crops[0] if len(crops) > 0 else crops
+
 
 # TODO fazer deploy em Flask
 
@@ -134,8 +132,8 @@ if __name__ == '__main__':
 
     ground_true_bbox = [[122, 21, 210, 637],
                         [122, 21, 210, 637]]
-    test_images = ['../test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
-                   '../test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg']
+    test_images = ['test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg',
+                   'test/motor_somente_imgs/5f7b12cccccffe00323542c0.jpg']
 
     s0 = time.time()
     print(f'{s0 - s} segundos para inicialização')
@@ -151,7 +149,8 @@ if __name__ == '__main__':
         print(f'Score: {round(pred_scores[0] * 100, 2)}%\n')
         s1 = time.time()
         print(f'{s1 - s0} segundos para predição')
-        model.crop(path, '../test/motor_somente_imgs')
+        # crop to check
+        model.crop(predictor, path, f'test/motor_somente_imgs')
         #assert sum([abs(item_pred - item_groung_truth)
         #            for item_pred, item_groung_truth in zip(pred_boxes[0], ground_true_bbox[ind])]) < 24
 
