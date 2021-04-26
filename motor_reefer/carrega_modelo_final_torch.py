@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
     predictor = model.get_predictor()
 
-    for ind, path in enumerate(os.listdir(images_path)):
+    for ind, path in enumerate(test_images):
         print(f'Test Image {ind}\n')
         image = cv2.imread(path)
         pred_boxes, pred_classes, pred_scores = model.predict(predictor, image)
