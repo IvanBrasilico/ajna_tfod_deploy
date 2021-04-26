@@ -63,12 +63,15 @@ class Detectron2Model():
             image = image_path    
         pred_boxes, pred_classes, pred_scores = list(), list(), list()
         predictions = predictor(image)['instances'].to('cpu')
+        
         if predictions:
             pred_fields = predictions.get_fields()
             pred_boxes = [tensor.tolist() for tensor in list(pred_fields['pred_boxes'])]
             pred_classes = pred_fields['pred_classes'].tolist()
             pred_scores = pred_fields['scores'].tolist()
-            return pred_boxes, pred_classes, pred_scores
+            
+        return pred_boxes, pred_classes, pred_scores
+         
 
     def plot_detections(self, image):
 
