@@ -19,7 +19,7 @@ import os, cv2
 
 
 MODEL = 'models/detectron2_fastcnn/model_final_ciclo03.pth'
-MODEL2 = 'C://Users//94512868372//Downloads//joel_ciclo04_detectron2_reefer_19_04_2021//model_final_ciclo04.pth'
+MODEL2 = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
 
 class Detectron2Model():
     """[summary]
