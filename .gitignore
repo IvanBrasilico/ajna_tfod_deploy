@@ -1,12 +1,18 @@
 # Project exclude paths
-/models/efficientdet_d1
 /venv/
 /venv_tf23/
 
-/models/detectron2_fastcnn/model_final_ciclo03.pth
+/models
 /teste2.jpg
 /teste2_original.jpg
 /testes.py
 
 model_final*
 bases/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
