@@ -28,7 +28,7 @@ class Detectron2Model():
         self.model_path = model_path
         self.num_classes = num_classes
         self.classes_names = classes_names
-        self.threshold = .8
+        self.threshold = .95
         self.cfg = get_cfg()
         # self.cfg.MODEL.DEVICE = 'cpu'
         #self.predictor = self.get_predictor()
