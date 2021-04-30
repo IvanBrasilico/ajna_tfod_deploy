@@ -3,10 +3,10 @@ import logging
 import os
 import sys
 import time
+from datetime import datetime
+
 from PIL import Image
 from bson import ObjectId
-from collections import Counter
-from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
@@ -116,4 +116,21 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = ModelContaminado()
         comunica = ComunicaReeeferContaminado(model, mongodb)
-        comunica.update_mongo()
+        # comunica.update_mongo()
+        # Baixar imagens de falso positivo
+        comunica.filtro['metadata.predictions.reefer.reefer_contaminado'] = True
+        comunica.set_cursor()
+        comunica.limit = 50
+        try:
+            os.mkdir('falsos_positivos')
+        except FileExistsError:
+            pass
+        for registro in comunica.cursor:
+            _id = ObjectId(registro['_id'])
+            pil_image = comunica.get_pil_image(_id)
+            image_name = f'{str(_id)}.jpeg'
+            print(image_name)
+            try:
+                pil_image.save(os.path.join('falsos_positivos', image_name))
+            except FileExistsError:
+                pass
