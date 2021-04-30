@@ -19,7 +19,7 @@ from tensorflow.keras import layers
 
 IMG_SIZE = 380
 base_path = os.path.dirname(__file__)
-MODEL = os.path.join(base_path, '..', 'models', 'efficientnetb4', 'contaminados_ciclo0.h5')
+MODEL = os.path.join(base_path, '..', 'models', 'efficientnetb4', 'contaminados_ciclo1_c.h5')
 
 
 def build_model():
@@ -51,7 +51,7 @@ class ModelContaminado():
         img_array = self.image_to_np(image)
         prediction = self.model.predict(img_array)
         # Retorna True se contaminado e False se não contaminado
-        return float(prediction[0]) < .5
+        return float(prediction[0]) > .5
 
 
 classes = {0: 'Nao contaminado',

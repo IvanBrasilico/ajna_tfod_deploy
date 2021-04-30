@@ -34,11 +34,12 @@ def update_mongo(model, db, limit=10):
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
-        # pred_gravado = registro.get('metadata').get('predictions')
+        coords = registro.get('metadata').get('predictions').get('bbox')[0]
         grid_out = fs.get(_id)
         image = grid_out.read()
         pil_image = Image.open(io.BytesIO(image))
         pil_image = pil_image.convert('RGB')
+        pil_image = pil_image.crop((coords[1], coords[0], coords[3], coords[2]))
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
         pred = model.predict(pil_image)
