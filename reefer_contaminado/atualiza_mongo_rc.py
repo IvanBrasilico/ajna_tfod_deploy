@@ -119,8 +119,8 @@ if __name__ == '__main__':
         # comunica.update_mongo()
         # Baixar imagens de falso positivo
         comunica.filtro['metadata.predictions.reefer.reefer_contaminado'] = True
-        comunica.set_cursor()
         comunica.limit = 50
+        comunica.set_cursor()
         try:
             os.mkdir('falsos_positivos')
         except FileExistsError:
