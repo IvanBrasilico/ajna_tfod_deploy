@@ -34,7 +34,7 @@ def update_mongo(model, db, limit=10):
     for ind, registro in enumerate(cursor):
         s0 = time.time()
         _id = ObjectId(registro['_id'])
-        coords = registro.get('metadata').get('predictions').get('bbox')[0]
+        coords = registro.get('metadata').get('predictions')[0].get('bbox')
         grid_out = fs.get(_id)
         image = grid_out.read()
         pil_image = Image.open(io.BytesIO(image))
