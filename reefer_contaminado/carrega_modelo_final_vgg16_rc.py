@@ -1,8 +1,8 @@
+import os
 # TODO: Descomentar abaixo para rodar inferência na CPU
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-import os.path
-
+#os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = "2"
 
 # TODO: Para tensorflow não comer toda a memória
 try:
@@ -13,18 +13,19 @@ except:
 
 import numpy as np
 from PIL import Image
-#from tensorflow.keras.applications import EfficientNetB4
 from tensorflow.keras.models import load_model
 
 
 IMG_SIZE = 150
 base_path = os.path.dirname(__file__)
 
-MODEL = 'VGG16_contaminado_unfreeze_aug_ciclo01.h5'
-#MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
+print(base_path)
+
+#MODEL = 'VGG16_contaminado_unfreeze_aug_ciclo01.h5'
+MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
 if os.path.exists(MODEL):
-    print(f'Loading model from {MODEL}')
+    print(f'\nLoading model from {MODEL}')
 else:
     import sys
     sys.exit()
