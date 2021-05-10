@@ -13,34 +13,19 @@ except:
 
 import numpy as np
 from PIL import Image
-from tensorflow.keras.applications import EfficientNetB4
-from tensorflow.keras import layers
+#from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.models import load_model
 
 
-IMG_SIZE = 380
+IMG_SIZE = 150
 base_path = os.path.dirname(__file__)
-MODEL = os.path.join(base_path, '..', 'models', 'efficientnetb4', 'contaminados_ciclo1_c.h5')
-
-
-def build_model():
-    # Carregar modelo e pesos do modelo
-    inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
-    model = EfficientNetB4(include_top=False, input_tensor=inputs)
-    # Rebuild top
-    x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
-    x = layers.BatchNormalization()(x)
-    top_dropout_rate = 0.2
-    x = layers.Dropout(top_dropout_rate, name="top_dropout")(x)
-    outputs = layers.Dense(1, activation="sigmoid", name="pred")(x)
-    model = tf.keras.Model(inputs, outputs, name="EfficientNet")
-    model.trainable = False
-    model.load_weights(MODEL)
-    return model
+MODEL = 'home/94512868372/ajna_joel/saved_models/vgg16/VGG16_contaminado_unfreeze_aug_ciclo01.h5'
+#MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
 
 class ModelContaminado():
     def __init__(self):
-        self.model = build_model()
+        self.model = load_model(MODEL)
 
     def image_to_np(self, image):
         image = image.resize((IMG_SIZE, IMG_SIZE), Image.LANCZOS)
