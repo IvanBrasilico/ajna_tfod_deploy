@@ -23,6 +23,10 @@ base_path = os.path.dirname(__file__)
 MODEL = 'models/vgg16/VGG16_contaminado_unfreeze_aug_ciclo01.h5'
 #MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
+print(os.path.exists(MODEL))
+
+import sys
+sys.exit()
 
 class ModelContaminado():
     def __init__(self):
