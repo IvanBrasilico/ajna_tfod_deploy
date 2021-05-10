@@ -2,7 +2,7 @@ import os
 # TODO: Descomentar abaixo para rodar inferência na CPU
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = "2"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = "3"
 
 # TODO: Para tensorflow não comer toda a memória
 try:
