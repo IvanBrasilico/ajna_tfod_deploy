@@ -24,6 +24,7 @@ if os.path.exists(MODEL):
     print(f'\nLoading model from {MODEL}')
 else:
     import sys
+    print('Model nao encontrado!')
     sys.exit()
 
 
