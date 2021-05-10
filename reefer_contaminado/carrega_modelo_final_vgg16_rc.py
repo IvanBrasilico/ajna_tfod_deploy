@@ -13,7 +13,8 @@ except:
 
 import numpy as np
 from PIL import Image
-from tensorflow.keras.models import load_model
+
+#from keras.models import load_model
 
 IMG_SIZE = 150
 
@@ -30,7 +31,7 @@ else:
 
 class ModelContaminado():
     def __init__(self):
-        self.model = load_model(MODEL)
+        self.model = tf.keras.models.load_model(MODEL)
 
     def image_to_np(self, image):
         image = image.resize((IMG_SIZE, IMG_SIZE), Image.LANCZOS)
