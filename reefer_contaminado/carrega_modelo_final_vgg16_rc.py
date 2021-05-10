@@ -18,13 +18,13 @@ from tensorflow.keras.models import load_model
 IMG_SIZE = 150
 
 #MODEL = 'VGG16_contaminado_unfreeze_aug_ciclo01.h5'
-MODEL = os.path.join('..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01')
+MODEL = os.path.join('models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
 if os.path.exists(MODEL):
     print(f'\nLoading model from {MODEL}')
 else:
     import sys
-    print('Model nao encontrado!')
+    print('\nModel nao encontrado!')
     sys.exit()
 
 
