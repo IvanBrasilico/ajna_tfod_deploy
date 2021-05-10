@@ -95,7 +95,7 @@ class Detectron2Model():
             [type]: [description]
         """
         pred_boxes, pred_classes, _ = self.predict(predictor, image_path)
-        img = Image.open(image_path)
+        img = Image.open(image_path).convert('RGB')
         cropped_images = defaultdict(list)
         for bbox, classe in zip(pred_boxes, pred_classes):
             crop = img.crop((bbox[0], bbox[1], bbox[2], bbox[3]))

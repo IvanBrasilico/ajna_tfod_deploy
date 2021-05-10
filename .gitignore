@@ -16,4 +16,7 @@ bases/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+/falsos_positivos/*
+/falsos_positivos.zip
+
 /.idea/*
