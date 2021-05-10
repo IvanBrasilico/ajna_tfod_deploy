@@ -19,3 +19,8 @@ bases/
 /falsos_positivos.zip
 
 /.idea/*
+/models/efficientdet_d1/checkpoint/checkpoint
+/models/efficientdet_d1/checkpoint/ckpt-10.data-00000-of-00001
+/models/efficientdet_d1/checkpoint/ckpt-10.index
+/models/efficientdet_d1.zip
+/models/efficientdet_d1/pipeline.config
