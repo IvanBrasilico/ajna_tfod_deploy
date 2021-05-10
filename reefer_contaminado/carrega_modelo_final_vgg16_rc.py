@@ -13,23 +13,19 @@ except:
 
 import numpy as np
 from PIL import Image
-from tensorflow.keras.applications import EfficientNetB4
-from tensorflow.keras import layers
+#from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.models import load_model
 
 
 IMG_SIZE = 150
 base_path = os.path.dirname(__file__)
-MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
-
-
-def build_model(model):
-   
-    return model.load_weights(model)
+MODEL = '/home/94512868372/ajna_joel/saved_models/vgg16/VGG16_contaminado_unfreeze_aug_ciclo01.h5'
+#MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
 
 class ModelContaminado():
     def __init__(self):
-        self.model = build_model(MODEL)
+        self.model = load_model(MODEL)
 
     def image_to_np(self, image):
         image = image.resize((IMG_SIZE, IMG_SIZE), Image.LANCZOS)
