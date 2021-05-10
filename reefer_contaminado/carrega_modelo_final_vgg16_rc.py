@@ -2,7 +2,6 @@ import os
 # TODO: Descomentar abaixo para rodar inferência na CPU
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = "3"
 
 # TODO: Para tensorflow não comer toda a memória
 try:
@@ -13,12 +12,10 @@ except:
 
 import numpy as np
 from PIL import Image
-
-#from keras.models import load_model
+from keras.models import load_model
 
 IMG_SIZE = 150
 
-#MODEL = 'VGG16_contaminado_unfreeze_aug_ciclo01.h5'
 MODEL = os.path.join('models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
 if os.path.exists(MODEL):
@@ -31,7 +28,7 @@ else:
 
 class ModelContaminado():
     def __init__(self):
-        self.model = tf.keras.models.load_model(MODEL)
+        self.model = load_model(MODEL)
 
     def image_to_np(self, image):
         image = image.resize((IMG_SIZE, IMG_SIZE), Image.LANCZOS)
