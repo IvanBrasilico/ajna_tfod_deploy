@@ -19,8 +19,7 @@ from tensorflow.keras.models import load_model
 
 IMG_SIZE = 150
 base_path = os.path.dirname(__file__)
-MODEL = 'home/94512868372/ajna_joel/saved_models/vgg16/VGG16_contaminado_unfreeze_aug_ciclo01.h5'
-#MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
+MODEL = os.path.join(base_path, '..', 'models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
 
 
 class ModelContaminado():
