@@ -125,6 +125,10 @@ def baixa_falso_positivo(comunica, limit=50):
 
 
 if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        limit = int(sys.argv[1])
+    else:
+        limit = 1
     MONGODB_URI = os.environ.get('MONGODB_URI')
     database = ''.join(MONGODB_URI.rsplit('/')[-1:])
     if not MONGODB_URI:
@@ -134,10 +138,7 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = ModelContaminado()
         comunica = ComunicaReeeferContaminado(model, mongodb)
-        if len(sys.argv) > 1:
-            limit = int(sys.argv[1])
-        else:
-            limit = 1
         comunica.update_mongo(limit)
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
+        baixa_falso_positivo(comunica, limit)
