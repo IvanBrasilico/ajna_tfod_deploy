@@ -137,8 +137,8 @@ if __name__ == '__main__':
     with MongoClient(host=MONGODB_URI) as conn:
         mongodb = conn[database]
         model = ModelContaminado()
-        comunica = ComunicaReeeferContaminado(model, mongodb)
-        comunica.update_mongo(limit)
+        comunica = ComunicaReeeferContaminado(model, mongodb, limit=limit)
+        comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
