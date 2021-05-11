@@ -3,10 +3,9 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime
-
 from PIL import Image
 from bson import ObjectId
+from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
 
@@ -74,7 +73,7 @@ class Comunica():
         self.pil_image = pil_image.convert('RGB')
         return self.pil_image
 
-    def update_mongo(self):
+    def update_mongo(self, limit=1):
         for ind, registro in enumerate(self.cursor):
             s0 = time.time()
             _id = ObjectId(registro['_id'])
@@ -97,7 +96,6 @@ class ComunicaReeeferContaminado(Comunica):
     FILTRO = {'metadata.contentType': 'image/jpeg',
               'metadata.predictions.reefer.reefer_bbox': {'$exists': True},
               'metadata.predictions.reefer.reefer_contaminado': {'$exists': False}}
-<<<<<<< HEAD
     CAMPO_ATUALIZADO = 'metadata.predictions.0.reefer.0.reefer_contaminado'
 
     def get_pil_image(self, _id: ObjectId):
@@ -105,38 +103,25 @@ class ComunicaReeeferContaminado(Comunica):
         bbox = self.grid_out.metadata['predictions'][0]['reefer'][0]['reefer_bbox']
         self.pil_image = self.pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
         return self.pil_image
-=======
-    cursor = db['fs.files'].find(
-        filtro, {'metadata.predictions': 1}).limit(limit)[:limit]
-    logging.info('Consulta ao banco efetuada.')
-    return cursor
 
 
-def update_mongo(model, db, limit=10):
-    fs = GridFS(db)
-    cursor = monta_filtro(db, limit)
-    counter = Counter()
-    for ind, registro in enumerate(cursor):
-        s0 = time.time()
+def baixa_falso_positivo(comunica, limit=50):
+    comunica.filtro['metadata.predictions.reefer.reefer_contaminado'] = True
+    comunica.limit = limit
+    comunica.set_cursor()
+    try:
+        os.mkdir('falsos_positivos')
+    except FileExistsError:
+        pass
+    for registro in comunica.cursor:
         _id = ObjectId(registro['_id'])
-        # pred_gravado = registro.get('metadata').get('predictions')
-        grid_out = fs.get(_id)
-        image = grid_out.read()
-        pil_image = Image.open(io.BytesIO(image))
-        pil_image = pil_image.convert('RGB')
-        s1 = time.time()
-        logging.info(f'Elapsed retrieve time {s1 - s0}')
-        pred = model.predict(pil_image)
-        s2 = time.time()
-        logging.info(f'Elapsed model time {s2 - s1}.')
-        logging.info({'_id': _id, 'vazio': pred})
-        db['fs.files'].update(
-            {'_id': _id},
-            {'$set': {'metadata.predictions.0.reefer.reefer_contaminado': pred}}
-        )
-        s3 = time.time()
-        logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
->>>>>>> parent of e7ba983 (Publicação modelo Efficientnet de reefer contaminado - faltava recortar bbox)
+        pil_image = comunica.get_pil_image(_id)
+        image_name = f'{str(_id)}.jpeg'
+        print(image_name)
+        try:
+            pil_image.save(os.path.join('falsos_positivos', image_name))
+        except FileExistsError:
+            pass
 
 
 if __name__ == '__main__':
@@ -149,21 +134,10 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = ModelContaminado()
         comunica = ComunicaReeeferContaminado(model, mongodb)
-        # comunica.update_mongo()
-        # Baixar imagens de falso positivo
-        comunica.filtro['metadata.predictions.reefer.reefer_contaminado'] = True
-        comunica.limit = 50
-        comunica.set_cursor()
-        try:
-            os.mkdir('falsos_positivos')
-        except FileExistsError:
-            pass
-        for registro in comunica.cursor:
-            _id = ObjectId(registro['_id'])
-            pil_image = comunica.get_pil_image(_id)
-            image_name = f'{str(_id)}.jpeg'
-            print(image_name)
-            try:
-                pil_image.save(os.path.join('falsos_positivos', image_name))
-            except FileExistsError:
-                pass
+        if len(sys.argv) > 1:
+            limit = int(sys.argv[1])
+        else:
+            limit = 1
+        comunica.update_mongo(limit)
+        # Para baixar imagens de falso positivo comentar a linha acima e descomentar
+        # a linha abaixo.
