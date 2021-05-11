@@ -141,4 +141,4 @@ if __name__ == '__main__':
         comunica.update_mongo(limit)
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
-        baixa_falso_positivo(comunica, limit)
+        # baixa_falso_positivo(comunica, limit)
