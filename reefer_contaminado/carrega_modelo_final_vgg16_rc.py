@@ -16,7 +16,7 @@ from tensorflow.keras.models import load_model
 
 IMG_SIZE = 150
 
-MODEL = os.path.join('models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
+MODEL = os.path.join('models', 'vgg16', 'VGG16_contaminado_aug_ciclo4_2021-05-15-1603.h5')
 
 if os.path.exists(MODEL):
     print(f'\nLoading model from {MODEL}')
