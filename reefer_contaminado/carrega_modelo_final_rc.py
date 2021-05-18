@@ -13,19 +13,19 @@ except:
 
 import numpy as np
 from PIL import Image
-from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras import layers
 
 
 IMG_SIZE = 380
 base_path = os.path.dirname(__file__)
-MODEL = os.path.join(base_path, '..', 'models', 'efficientnetb4', 'contaminados_ciclo1_c.h5')
+MODEL = os.path.join(base_path, '..', 'models', 'mobilenetv2', 'contaminados_ciclo2_S_c.h5')
 
 
 def build_model():
     # Carregar modelo e pesos do modelo
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
-    model = EfficientNetB4(include_top=False, input_tensor=inputs)
+    model = MobileNetV2(include_top=False, input_tensor=inputs)
     # Rebuild top
     x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
     x = layers.BatchNormalization()(x)
