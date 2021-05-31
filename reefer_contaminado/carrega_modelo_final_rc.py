@@ -52,7 +52,7 @@ class ModelContaminado():
         prediction = self.model.predict(img_array)
         # Retorna True se contaminado e False se não contaminado
         print(f'Predição: {prediction[0]}')
-        return float(prediction[0]) > .9
+        return float(prediction[0]) > .6
 
 
 classes = {0: 'Nao contaminado',
