@@ -9,6 +9,7 @@ from bson import ObjectId
 from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
+import random
 
 sys.path.append('.')
 from reefer_contaminado.carrega_modelo_final_rc import ModelContaminado
@@ -92,10 +93,14 @@ class Comunica():
             s3 = time.time()
             logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
     
-    def get_metrics(self, fbeta, limit=1000):
+    def get_metrics(self, fbeta, take=1000, SEED=42):
 
+        random.seed(SEED)
+        # pega uma amostra randomica de tamanho 'take'de todos os reefers.
+        num_docs = self.cursor.count()
+        list_idx = random.sample(range(num_docs), take) 
         ypred = []
-        for i in range(limit):
+        for i in list_idx:
             registro = self.cursor[i]
             _id = ObjectId(registro['_id'])
             pil_image = self.get_pil_image(_id)
@@ -105,7 +110,7 @@ class Comunica():
 
         predicted_positive = np.sum(ypred) # calculating predicted positives     
         print(f'Positive Predictions: {predicted_positive}')
-        print(f'fbeta2_ajustado: {fbeta - (predicted_positive / limit)}')
+        print(f'fbeta_ajustado: {fbeta - (predicted_positive / take)}')
 
 class ComunicaReeeferContaminado(Comunica):
     FILTRO = {'metadata.contentType': 'image/jpeg',
@@ -153,8 +158,9 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = ModelContaminado()
         comunica = ComunicaReeeferContaminado(model, mongodb, limit=limit)
-        comunica.update_mongo()
+        #comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
-        #comunica.get_metrics(fbeta=0.615, limit=1000)
+        
+        comunica.get_metrics(fbeta=0.615, take=1000)
