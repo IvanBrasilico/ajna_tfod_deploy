@@ -163,7 +163,7 @@ if __name__ == '__main__':
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
         
-        comunica.get_metrics(fbeta=0.615, take=1000)
+        comunica.get_metrics(fbeta=0.756, take=1000)
 
 
 
