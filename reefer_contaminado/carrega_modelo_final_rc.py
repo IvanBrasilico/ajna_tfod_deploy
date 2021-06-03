@@ -19,7 +19,7 @@ from tensorflow.keras import layers
 
 IMG_SIZE = 224
 base_path = os.path.dirname(__file__)
-MODEL = os.path.join(base_path, '..', 'models', 'mobilenetv2', '18-05', 'contaminados_ciclo2_S_c_18_05.h5')
+MODEL = os.path.join(base_path, '..', 'models', 'mobilenetv2', '19-05', 'contaminados_ciclo2_S_b_19_05.h5')
 
 
 def build_model():
