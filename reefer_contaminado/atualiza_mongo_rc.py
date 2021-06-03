@@ -164,10 +164,10 @@ if __name__ == '__main__':
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
         
-        comunica.get_metrics(fbeta=0.756, take=1000)
+        comunica.get_metrics(fbeta=0.593, take=1000)
 
 
-
+#threshold = .6
 # +----------------------------------+-----------+--------+-------+-------+-------+
 # |        MobileNetV2 Model         | Precision | Recall |  F1   |  F2   |  F4   |
 # +----------------------------------+-----------+--------+-------+-------+-------+
