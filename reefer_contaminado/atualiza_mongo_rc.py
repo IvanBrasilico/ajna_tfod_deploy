@@ -3,13 +3,14 @@ import logging
 import os
 import sys
 import time
+import random
 from PIL import Image
 import numpy as np
 from bson import ObjectId
 from datetime import datetime
 from gridfs import GridFS
 from pymongo import MongoClient
-import random
+
 
 sys.path.append('.')
 from reefer_contaminado.carrega_modelo_final_rc import ModelContaminado
@@ -100,12 +101,12 @@ class Comunica():
         num_docs = self.cursor.count()
         list_idx = random.sample(range(num_docs), take) 
         ypred = []
-        for i in list_idx:
+        for count, i in enumerate(list_idx):
             registro = self.cursor[i]
             _id = ObjectId(registro['_id'])
             pil_image = self.get_pil_image(_id)
             pred = self.model.predict(pil_image)
-            print(f"{i + 1}ª Imagem {_id} predicted as {'Contaminada' if pred == True else 'Não Contaminada'}")
+            print(f"{count + 1} --> {i + 1}ª Imagem {_id} predicted as {'Contaminada' if pred == True else 'Não Contaminada'}")
             ypred.append(np.array(pred, np.float32))
 
         predicted_positive = np.sum(ypred) # calculating predicted positives     
