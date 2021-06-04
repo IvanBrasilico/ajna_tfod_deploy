@@ -164,7 +164,8 @@ if __name__ == '__main__':
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
         
-        comunica.get_metrics(fbeta=0.942, take=1000)
+        comunica.get_metrics(fbeta=0.951, take=1000)
+
 
 
 #threshold = .6
