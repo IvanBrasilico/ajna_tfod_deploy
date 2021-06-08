@@ -159,11 +159,11 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = ModelContaminado()
         comunica = ComunicaReeeferContaminado(model, mongodb, limit=limit)
-        #comunica.update_mongo()
+        comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
-        comunica.get_metrics(fbeta=0.951, take=1000)
+        #comunica.get_metrics(fbeta=0.951, take=1000)
 
 
 
