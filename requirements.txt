@@ -1,7 +1,0 @@
-tensorflow==2.2.1
-Pillow==8.0.1
-tf-slim==1.1.0
-scipy==1.5.4
-matplotlib==3.3.3
-tf-models-official==2.2.2
-pymongo
