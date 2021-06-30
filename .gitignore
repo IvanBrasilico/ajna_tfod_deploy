@@ -2,10 +2,6 @@
 /venv/
 /venv_tf23/
 
-*.jpg
-*.jpeg
-*.h5
-
 /teste2.jpg
 /teste2_original.jpg
 /testes.py
@@ -26,10 +22,5 @@ bases/
 /models/efficientdet_d1/checkpoint/checkpoint
 /models/efficientdet_d1/checkpoint/ckpt-10.data-00000-of-00001
 /models/efficientdet_d1/checkpoint/ckpt-10.index
-
 /models/efficientdet_d1.zip
 /models/efficientdet_d1/pipeline.config
-
-###ncm_unico
-/ncm_unico/saved_models
-/ncm_unico/test
