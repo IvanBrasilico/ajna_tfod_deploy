@@ -33,23 +33,20 @@ class NCMUnico():
         self.class_dict = class_dict
         self.model = load_model(model_path)
 
-    def preprocessing_image(self, image_path: str,):
-        pil_img = Image.open(image_path).resize(self.img_size)
+    def preprocessing_image(self, image):
+        if isinstance(image, str):
+            pil_img = Image.open(image).resize(self.img_size)
+        else:
+            pil_img = Image.fromarray(image).resize(self.img_size)
         img_np = np.asarray(pil_img) / 255
         return np.expand_dims(img_np, axis=0)
 
-    def predict(self, image):
-        if isinstance(image, str):
-            image_np = self.preprocessing_image(image)
-        else:
-            if image.ndim != 4:
-                image_np = np.expand_dims(image / 255, axis=0)
-            else:
-                image_np = image / 255
-        return self.model.predict(image_np)[0]
+    def predict(self, pil_img):
+        pil_img = pil_img.resize(self.img_size)
+        image_np = np.asarray(pil_img) / 255
+        return self.model.predict(np.expand_dims(image_np, axis=0))[0]
 
     def classify_image(self, image):
-        
         pred_probs = self.predict(image).tolist()
         result = {}
         for classe, pred in enumerate(pred_probs):
@@ -57,9 +54,7 @@ class NCMUnico():
             result.update({ncm: pred})
         return result
 
-
 if __name__ == '__main__':
-
 
     s0 = time.time()
     model = NCMUnico() 
@@ -72,7 +67,8 @@ if __name__ == '__main__':
 
     for i, img_path in enumerate(test_images):
         
-        pred_probs = model.predict(img_path)
+        pil_image = Image.open(img_path)
+        pred_probs = model.predict(pil_image)
         confidence = np.max(pred_probs)
         pred_class = np.argmax(pred_probs)
         pred_label = model.class_dict[pred_class]

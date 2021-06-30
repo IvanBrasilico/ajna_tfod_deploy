@@ -3,8 +3,11 @@ import os, random
 import matplotlib.pyplot as plt
 from PIL import Image
 
-def preprocessing_image(image_path: str, IMG_SIZE: tuple):
-    pil_img = Image.open(image_path).resize(IMG_SIZE)
+def preprocessing_image(image, IMG_SIZE):
+    if isinstance(image, str):
+        pil_img = Image.open(image).resize(IMG_SIZE)
+    else:
+        pil_img = Image.fromarray(image).resize(IMG_SIZE)
     img_np = np.asarray(pil_img) / 255
     return np.expand_dims(img_np, axis=0)
 
@@ -51,12 +54,4 @@ def plot_nine_preds(model: object, test_image_paths: list, class_dict: dict, lab
         plt.axis('off')
 
 def predict(model: object, image, IMG_SIZE: tuple):
-    
-    if isinstance(image, str):
-        image_np = preprocessing_image(image, IMG_SIZE)
-    else:
-        if image.ndim != 4:
-            image_np = np.expand_dims(image / 255, axis=0)
-        else:
-            image_np = image / 255
-    return model.predict(image_np)
+    return model.predict(preprocessing_image(image, IMG_SIZE))[0]
