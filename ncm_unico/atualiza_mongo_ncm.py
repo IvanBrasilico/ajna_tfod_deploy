@@ -166,10 +166,10 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = NCMUnico()
         comunica = ComunicaReeeferContaminado(model, mongodb, limit=limit)
-        #comunica.update_mongo()
+        comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
-        baixa_erro(comunica, limit)
+        #baixa_erro(comunica, limit)
 
 
 
