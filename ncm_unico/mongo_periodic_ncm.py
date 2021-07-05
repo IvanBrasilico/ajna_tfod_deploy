@@ -3,7 +3,6 @@ import os
 import sys
 import time
 from pymongo import MongoClient
-from sqlalchemy import create_engine
 
 sys.path.append('.')
 from ncm_unico.atualiza_mongo_ncm import ComunicaReeeferContaminado
