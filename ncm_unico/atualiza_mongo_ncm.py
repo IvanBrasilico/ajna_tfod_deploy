@@ -99,7 +99,7 @@ class Comunica():
  
 class ComunicaReeeferContaminado(Comunica):
     
-    NCMS = ["0202", "0901", "1701", "2304", "4011"]
+    NCMS = ["0202", "0805", "0901", "1701", "2304", "4011"]
     
     FILTRO = {
                 "metadata.contentType": "image/jpeg",

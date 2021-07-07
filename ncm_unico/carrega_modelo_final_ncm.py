@@ -9,17 +9,19 @@ from tensorflow.keras.models import load_model
     '2304': 'residuos',
     '4011': 'pneu',
     '0901': 'cafe',
-    '0202': 'carne'}
+    '0202': 'carne',
+    '0805': 'laranja'}
 """
 
-MODEL = 'ncm_unico/saved_models/efficientNetB4/ncm_model_transfer_unfreeze150.h5'
+MODEL = 'ncm_unico/saved_models/efficientNetB4/6ncms_transfer_unfreeze150_v1.h5'
 
 CLASS_DICT = {
     0: '0202',
-    1: '0901',
-    2: '1701',
-    3: '2304',
-    4: '4011'}
+    1: '0805',
+    2: '0901',
+    3: '1701',
+    4: '2304',
+    5: '4011'}
 
 IMG_SIZE = (380, 380)
 
