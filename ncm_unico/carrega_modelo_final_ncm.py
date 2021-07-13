@@ -4,24 +4,33 @@ from PIL import Image
 from termcolor import cprint
 from tensorflow.keras.models import load_model
 
-"""label_map = {
-    '1701': 'açúcar',
+"""
+label_map = {
+    '0000': 'vazio',
+    '1701': 'acucar',
     '2304': 'residuos',
     '4011': 'pneu',
     '0901': 'cafe',
-    '0202': 'carne',
-    '0805': 'laranja'}
+    '0202': 'carne bovina',
+    '0805': 'laranja',
+    '1202': 'amendoins',
+    '5201': 'algodao',
+    '0207': 'carne ave'}
 """
 
-MODEL = 'ncm_unico/saved_models/efficientNetB4/6ncms_transfer_unfreeze150_v1.h5'
+MODEL = 'ncm_unico/saved_models/efficientNetB4/10ncms_transfer_unfreeze150_weight_v3.h5'
 
 CLASS_DICT = {
-    0: '0202',
-    1: '0805',
-    2: '0901',
-    3: '1701',
-    4: '2304',
-    5: '4011'}
+    0: "0000",
+    1: '0202',
+    2: '0207',
+    3: '0805',
+    4: '0901',
+    5: '1202',
+    6: '1701',
+    7: '2304',
+    8: '4011',
+    9: '5201'}
 
 IMG_SIZE = (380, 380)
 
@@ -48,8 +57,8 @@ class NCMUnico():
         image_np = np.asarray(pil_img) / 255
         return self.model.predict(np.expand_dims(image_np, axis=0))[0]
 
-    def classify_image(self, image):
-        pred_probs = self.predict(image).tolist()
+    def classify_image(self, pil_img):
+        pred_probs = self.predict(pil_img).tolist()
         result = {}
         for classe, pred in enumerate(pred_probs):
             ncm = self.class_dict[classe]

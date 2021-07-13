@@ -99,7 +99,7 @@ class Comunica():
  
 class ComunicaReeeferContaminado(Comunica):
     
-    NCMS = ["0202", "0805", "0901", "1701", "2304", "4011"]
+    NCMS = ["0000", "0202", "0207", "0805", "0901", "1202", "1701", "2304", "4011", "5201"]
     
     FILTRO = {
                 "metadata.contentType": "image/jpeg",
@@ -120,7 +120,7 @@ class ComunicaReeeferContaminado(Comunica):
         return self.pil_image
 
 
-def baixa_erro(comunica, limit=50):
+def baixa_divergente(comunica, limit=50):
     # update field predictions.ncm to True
     comunica.filtro['metadata.predictions.ncm.0.ncm'] = {"$exists": True}
     
@@ -169,7 +169,7 @@ if __name__ == '__main__':
         comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
-        #baixa_erro(comunica, limit)
+        #baixa_divergente(comunica, limit)
 
 
 
