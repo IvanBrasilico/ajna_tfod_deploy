@@ -83,7 +83,7 @@ if __name__ == '__main__':
         confidence = np.max(pred_probs)
         pred_class = np.argmax(pred_probs)
         pred_label = model.class_dict[pred_class]
-        true_label = os.path.dirname(img_path).split('\\')[-1]    
+        true_label = os.path.dirname(img_path).split('/')[-1]    
         im = os.path.basename(img_path)
         if true_label == pred_label:
             cprint(f"Imagem {im} - True Label -> {true_label} -> Predicted as {pred_label} - Confiança: {confidence * 100:.2f}", 'blue')
