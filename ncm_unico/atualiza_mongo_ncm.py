@@ -121,13 +121,21 @@ class ComunicaReeeferContaminado(Comunica):
 
 
 def baixa_divergente(comunica, limit=50):
+    """[busca e baixa as imagens cujas ncms foram declaradas no carga como uma das classes
+    aprendidas pelo modelo em produção, mas divergente com o que foi predito pelo referido
+    modelo classificador]
+
+    Args:
+        comunica ([type]): [description]
+        limit (int, optional): [description]. Defaults to 50.
+    """
     # update field predictions.ncm to True
     comunica.filtro['metadata.predictions.ncm.0.ncm'] = {"$exists": True}
     
     for ncm in comunica.NCMS:
         # add new fields
-        comunica.filtro["metadata.carga.ncm.0.ncm"] = ncm
-        comunica.filtro["metadata.predictions.0.ncm.0.ncm.prediction"] = {"$ne": ncm}
+        comunica.filtro["metadata.carga.ncm.0.ncm"] = ncm # --> foi delcarado no carga uma ncm
+        comunica.filtro["metadata.predictions.0.ncm.0.ncm.prediction"] = {"$ne": ncm}  # --> mas foi o modelo classificou de modo divergente do declarado
     
         comunica.limit = limit
         comunica.set_cursor()
@@ -136,7 +144,7 @@ def baixa_divergente(comunica, limit=50):
         if error == 0:
             continue
 
-        ncm_dir = os.path.join('erro_ncm', ncm)
+        ncm_dir = os.path.join('ncms_divergentes', ncm)
         try:
             os.makedirs(ncm_dir)
         except FileExistsError:
@@ -166,10 +174,10 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = NCMUnico()
         comunica = ComunicaReeeferContaminado(model, mongodb, limit=limit)
-        comunica.update_mongo()
+        #comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
-        #baixa_divergente(comunica, limit)
+        baixa_divergente(comunica, limit) # --> pega até 50
 
 
 
