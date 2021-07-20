@@ -61,7 +61,8 @@ class Comunica():
 
     def set_cursor(self):
         self.cursor = self.mongodb['fs.files'].find(self.filtro,
-                                                    {'metadata.predictions': 1}
+                                                    {'metadata.predictions': 1,
+                                                    'metadata.carga.ncm': 1}
                                                     ).limit(self.limit)[:self.limit]
         logging.info('Consulta ao banco efetuada.')
 
@@ -85,8 +86,13 @@ class Comunica():
             confidence = np.max(pred_probs)
             pred_class = np.argmax(pred_probs)
             pred_label = self.model.class_dict[pred_class]
+            ncm_carga = registro.get('metadata').get('carga').get('ncm')[0].get('ncm')        
+            logging.info(f'NCM Declarada: {ncm_carga} - NCM Prediction: {pred_label}')
+            divergent = False
+            if ncm_carga != pred_label: divergent = True
             pred_info = {"prediction": pred_label,
-                         "score": float(confidence)}
+                         "score": float(confidence),
+                         "divergent": divergent}
             s2 = time.time()
             logging.info(f'Elapsed model time {s2 - s1}.')
             logging.info({'_id': _id, 'pred': pred_info})
@@ -134,16 +140,13 @@ def baixa_divergente(comunica, limit=50):
     
     for ncm in comunica.NCMS:
         # add new fields
-        comunica.filtro["metadata.carga.ncm.0.ncm"] = ncm # --> foi delcarado no carga uma ncm
-        comunica.filtro["metadata.predictions.0.ncm.0.ncm.prediction"] = {"$ne": ncm}  # --> mas foi o modelo classificou de modo divergente do declarado
+        comunica.filtro["metadata.predictions.0.ncm.0.ncm.divergent"] = {"$eq": True}
     
         comunica.limit = limit
         comunica.set_cursor()
         error = comunica.cursor.count()
         print(f'{error} localizados para NCM {ncm}')
-        if error == 0:
-            continue
-
+        if error == 0: continue
         ncm_dir = os.path.join('ncms_divergentes', ncm)
         try:
             os.makedirs(ncm_dir)
@@ -174,10 +177,10 @@ if __name__ == '__main__':
         mongodb = conn[database]
         model = NCMUnico()
         comunica = ComunicaReeeferContaminado(model, mongodb, limit=limit)
-        #comunica.update_mongo()
+        comunica.update_mongo()
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
-        baixa_divergente(comunica, limit) # --> pega até 50
+        #baixa_divergente(comunica, limit) # --> pega até 50
 
 
 
