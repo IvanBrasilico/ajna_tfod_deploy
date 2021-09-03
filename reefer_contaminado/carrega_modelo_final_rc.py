@@ -13,26 +13,26 @@ except:
 
 import numpy as np
 from PIL import Image
-from tensorflow.keras.applications import EfficientNetB4
+from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras import layers
 
 
-IMG_SIZE = 380
+IMG_SIZE = 224
 base_path = os.path.dirname(__file__)
-MODEL = os.path.join(base_path, '..', 'models', 'efficientnetb4', 'contaminados_ciclo3_S_c.h5')
+MODEL = os.path.join(base_path, '..', 'models', 'mobilenetv2', '19-05', 'contaminados_ciclo2_S_b_19_05.h5')
 
 
 def build_model():
     # Carregar modelo e pesos do modelo
     inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
-    model = EfficientNetB4(include_top=False, input_tensor=inputs)
+    model = MobileNetV2(include_top=False, input_tensor=inputs)
     # Rebuild top
     x = layers.GlobalAveragePooling2D(name="avg_pool")(model.output)
     x = layers.BatchNormalization()(x)
-    top_dropout_rate = 0.2
+    top_dropout_rate = 0.05
     x = layers.Dropout(top_dropout_rate, name="top_dropout")(x)
     outputs = layers.Dense(1, activation="sigmoid", name="pred")(x)
-    model = tf.keras.Model(inputs, outputs, name="EfficientNet")
+    model = tf.keras.Model(inputs, outputs, name="MobileNet")
     model.trainable = False
     model.load_weights(MODEL)
     return model
@@ -51,8 +51,8 @@ class ModelContaminado():
         img_array = self.image_to_np(image)
         prediction = self.model.predict(img_array)
         # Retorna True se contaminado e False se não contaminado
-        print(prediction)
-        return float(prediction[0]) > .9
+        print(f'Predição: {prediction[0]}')
+        return float(prediction[0]) > .5
 
 
 classes = {0: 'Nao contaminado',

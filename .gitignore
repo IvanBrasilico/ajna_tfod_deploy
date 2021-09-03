@@ -6,6 +6,8 @@
 /teste2_original.jpg
 /testes.py
 
+*.h5
+
 model_final*
 bases/
 
