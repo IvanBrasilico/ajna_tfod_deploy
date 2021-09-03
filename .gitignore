@@ -24,3 +24,4 @@ bases/
 /models/efficientdet_d1/checkpoint/ckpt-10.index
 /models/efficientdet_d1.zip
 /models/efficientdet_d1/pipeline.config
+*.pyc
