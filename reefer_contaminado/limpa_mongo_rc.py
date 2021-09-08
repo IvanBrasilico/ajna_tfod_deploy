@@ -1,10 +1,5 @@
-import io
-import logging
 import os
-import sys
-import time
 from datetime import datetime
-
 from pymongo import MongoClient
 
 if __name__ == '__main__':
