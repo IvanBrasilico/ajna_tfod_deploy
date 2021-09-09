@@ -3,6 +3,8 @@ import os
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 
+print(f'\nTensorflow Version: {tf.__version__}')
+
 # TODO: Para tensorflow não comer toda a memória
 try:
     physical_devices = tf.config.experimental.list_physical_devices('GPU')
@@ -21,10 +23,8 @@ if os.path.exists(MODEL):
     print(f'\nLoading model from {MODEL}')
 else:
     import sys
-    print('\nModel nao encontrado!')
+    print('\nModel not found!')
     sys.exit()
-
-
 class ModelContaminado():
     def __init__(self):
         self.model = load_model(MODEL)
