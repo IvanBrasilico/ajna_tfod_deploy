@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import time
-from collections import Counter
 from datetime import datetime
 
 import cv2
@@ -66,9 +65,9 @@ def update_mongo(model, db, engine, limit=10):
         # size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
-         
+
         pred_boxes, pred_classes, pred_scores = model.predict(predictor, image)
-        
+
         if len(pred_boxes) == 0 or pred_scores[0] < .95:
             if len(pred_boxes) == 0:
                 class_label = 2
@@ -108,10 +107,10 @@ def update_mongo(model, db, engine, limit=10):
 
 
 if __name__ == '__main__':
-    
-    #saved_model_path = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
-    #num_classes = 1
-    #classes_names = ['motor']
+
+    # saved_model_path = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
+    # num_classes = 1
+    # classes_names = ['motor']
 
     model = Detectron2Model()
 

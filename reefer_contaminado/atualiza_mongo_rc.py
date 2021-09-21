@@ -1,16 +1,16 @@
 import io
 import logging
 import os
+import random
 import sys
 import time
-import random
-from PIL import Image
-import numpy as np
-from bson import ObjectId
 from datetime import datetime
+
+import numpy as np
+from PIL import Image
+from bson import ObjectId
 from gridfs import GridFS
 from pymongo import MongoClient
-
 
 sys.path.append('.')
 from reefer_contaminado.carrega_modelo_final_rc import ModelContaminado
@@ -93,25 +93,27 @@ class Comunica():
             )
             s3 = time.time()
             logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
-    
+
     def get_metrics(self, fbeta, take=1000, SEED=42):
 
         random.seed(SEED)
         # pega uma amostra randomica de tamanho 'take'de todos os reefers.
         num_docs = self.cursor.count()
-        list_idx = random.sample(range(num_docs), take) 
+        list_idx = random.sample(range(num_docs), take)
         ypred = []
         for count, i in enumerate(list_idx):
             registro = self.cursor[i]
             _id = ObjectId(registro['_id'])
             pil_image = self.get_pil_image(_id)
             pred = self.model.predict(pil_image)
-            print(f"{count + 1} --> {i + 1}ª Imagem {_id} predicted as {'Contaminada' if pred == True else 'Não Contaminada'}")
+            print(
+                f"{count + 1} --> {i + 1}ª Imagem {_id} predicted as {'Contaminada' if pred == True else 'Não Contaminada'}")
             ypred.append(np.array(pred, np.float32))
 
-        predicted_positive = np.sum(ypred) # calculating predicted positives     
+        predicted_positive = np.sum(ypred)  # calculating predicted positives
         print(f'Positive Predictions: {predicted_positive}')
         print(f'fbeta_ajustado: {fbeta - (predicted_positive / take)}')
+
 
 class ComunicaReeeferContaminado(Comunica):
     FILTRO = {'metadata.contentType': 'image/jpeg',
@@ -163,7 +165,6 @@ if __name__ == '__main__':
         # Para baixar imagens de falso positivo comentar a linha acima e descomentar
         # a linha abaixo.
         # baixa_falso_positivo(comunica, limit)
-        #comunica.get_metrics(fbeta=0.951, take=1000)
+        # comunica.get_metrics(fbeta=0.951, take=1000)
 
-
-
+# {'metadata.contentType': 'image/jpeg', 'metadata.predictions.reefer.reefer_bbox': {'$exists': true}, 'metadata.predictions.reefer.reefer_contaminado': {'$exists': false}, 'metadata.dataescaneamento': {'$gte': ISODate('2021-06-01')} }
