@@ -13,7 +13,7 @@ from gridfs import GridFS
 from pymongo import MongoClient
 
 sys.path.append('.')
-from reefer_contaminado.carrega_modelo_final_rc import ModelContaminado
+from reefer_contaminado.carrega_modelo_final_efficientnetB4_rc import ModelContaminado
 
 logging.basicConfig(level=logging.DEBUG)
 

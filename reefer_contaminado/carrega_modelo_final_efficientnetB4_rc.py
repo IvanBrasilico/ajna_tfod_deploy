@@ -3,6 +3,8 @@ import os
 #os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 import tensorflow as tf
 
+print(f'\nTensorflow Version: {tf.__version__}')
+
 # TODO: Para tensorflow não comer toda a memória
 try:
     physical_devices = tf.config.experimental.list_physical_devices('GPU')
@@ -14,18 +16,15 @@ import numpy as np
 from PIL import Image
 from tensorflow.keras.models import load_model
 
-IMG_SIZE = 150
-
-MODEL = os.path.join('models', 'vgg16', 'VGG16_contaminado_unfreeze_aug_ciclo01.h5')
+IMG_SIZE = 380
+MODEL = os.path.join('models', 'efficientnetb4', 'transfer_from_imagenet_unfreeze150_7e30.h5')
 
 if os.path.exists(MODEL):
     print(f'\nLoading model from {MODEL}')
 else:
     import sys
-    print('\nModel nao encontrado!')
+    print('\nModel not found!')
     sys.exit()
-
-
 class ModelContaminado():
     def __init__(self):
         self.model = load_model(MODEL)
@@ -40,7 +39,7 @@ class ModelContaminado():
         prediction = self.model.predict(img_array)
         # Retorna True se contaminado e False se não contaminado
         print(prediction)
-        return float(prediction[0]) > .9
+        return float(prediction[0]) > .5
 
 
 classes = {0: 'Nao contaminado',
@@ -67,6 +66,7 @@ if __name__ == '__main__':
                    ]
     ground_true = [True, True, True, True, True, False, False]
     for ind, imgname in enumerate(test_images):
+        print(imgname)
         pred = image_test(os.path.join(base_path, imgname))
         print(pred, ground_true[ind])
-        # assert ground_true[ind] == pred
+        #assert ground_true[ind] == pred
