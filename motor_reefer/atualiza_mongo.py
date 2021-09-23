@@ -53,11 +53,11 @@ def update_mongo(model, db, engine, limit=10):
         _id = ObjectId(registro['_id'])
         sql = f'select isocode_group from ajna_conformidade where id_imagem="{str(_id)}"'
         isocode_group = session.execute(sql).scalar()
-        if registro['uploadDate'] > max_uploadDate:
-            max_uploadDate = registro['uploadDate']
         if isocode_group is None or isocode_group[0] != 'R':
             logging.info(f'Pulando registro {_id} por não ser reefer')
             continue
+        if registro['uploadDate'] > max_uploadDate:
+            max_uploadDate = registro['uploadDate']
         grid_out = fs.get(_id)
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
