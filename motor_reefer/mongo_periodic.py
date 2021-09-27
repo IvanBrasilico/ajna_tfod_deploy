@@ -23,7 +23,7 @@ if not MONGODB_URI:
 with MongoClient(host=MONGODB_URI) as conn:
     mongodb = conn[database]
     engine = create_engine(SQL_URI)
-    update_mongo(model, mongodb, engine, 5000)
+    update_mongo(model, mongodb, engine, 10000)
     s0 = time.time()
     counter = 1
     while True:
@@ -33,5 +33,5 @@ with MongoClient(host=MONGODB_URI) as conn:
         if time.time() - s0 > 60 * 10:
             logging.info('Periódico chamado rodada %s' % counter)
             counter += 1
-            update_mongo(model, mongodb, engine, 2000)
+            update_mongo(model, mongodb, engine, 10000)
             s0 = time.time()
