@@ -49,7 +49,7 @@ def update_mongo(model, db, engine, limit=10):
 
     for ind, registro in enumerate(cursor):
         s0 = time.time()
-        _id = ObjectId(registro['_id'])
+        _id = registro['_id']
         sql = f'select isocode_group from ajna_conformidade where id_imagem="{str(_id)}"'
         isocode_group = session.execute(sql).scalar()
         if isocode_group is None or isocode_group[0] != 'R':
@@ -57,7 +57,7 @@ def update_mongo(model, db, engine, limit=10):
             continue
         if registro['uploadDate'] > max_uploadDate:
             max_uploadDate = registro['uploadDate']
-        grid_out = fs.get(_id)
+        grid_out = fs.get(ObjectId(_id))
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
