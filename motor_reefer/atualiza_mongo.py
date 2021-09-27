@@ -34,17 +34,16 @@ def monta_filtro(db, session, limit: int):
     cursor = db['fs.files'].find(
         filtro, {'uploadDate': 1, 'metadata.predictions': 1}).limit(limit)[:limit]
     logging.info('Consulta ao banco efetuada.')
-    return cursor
+    return cursor, min_uploadDate
 
 
 def update_mongo(model, db, engine, limit=10):
     Session = sessionmaker(bind=engine)
     session = Session()
     fs = GridFS(db)
-    cursor = monta_filtro(db, session, limit)
+    cursor, max_uploadDate = monta_filtro(db, session, limit)
     score_soma = 0.
     contagem = 0.001
-    max_uploadDate = datetime(2000, 1, 1)
 
     predictor = model.get_predictor()
 
