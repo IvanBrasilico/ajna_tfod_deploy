@@ -34,7 +34,8 @@ class Comunica():
     # PLACEHOLDERS - Constantes que precisam ser definidas pelas classes filhas
     FILTRO = {'metadata.contentType': 'image/jpeg'}
     CAMPO_ATUALIZADO = 'metadata.predictions.0'
-    DATA_INICIAL = datetime(2020, 12, 16)
+    #DATA_INICIAL = datetime(2020, 12, 16)
+    DATA_INICIAL = datetime(2021, 9, 1)
 
     def __init__(self, model, mongodb, sqlsession=None, limit=10):
         """
