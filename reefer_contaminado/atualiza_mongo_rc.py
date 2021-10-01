@@ -13,7 +13,7 @@ from gridfs import GridFS
 from pymongo import MongoClient
 
 sys.path.append('.')
-from reefer_contaminado.carrega_modelo_final_efficientnetb4_rc import ModelContaminado
+from carrega_modelo_final_efficientnetb4_rc import ModelContaminado
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -87,9 +87,9 @@ class Comunica():
             s2 = time.time()
             logging.info(f'Elapsed model time {s2 - s1}.')
             logging.info({'_id': _id, 'Score:': pred})
-            self.mongodb['fs.files'].update(
+            self.mongodb['fs.files'].update_one(
                 {'_id': _id},
-                {'$set': {self.campo_a_atualizar: pred}}
+                {'$set': {self.campo_a_atualizar: float(pred)}}
             )
             s3 = time.time()
             logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
