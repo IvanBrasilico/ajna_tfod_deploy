@@ -40,10 +40,8 @@ class ModelContaminado():
         # Retorna True se contaminado e False se não contaminado
         return prediction[0]
 
-
 classes = {0: 'Nao contaminado',
            1: 'Contaminado'}
-
 if __name__ == '__main__':
     model = ModelContaminado()
 
