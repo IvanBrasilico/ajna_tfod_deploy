@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from pymongo import MongoClient
 
-unset_since = datetime(2021, 9, 1)
+unset_since = datetime(2020, 12, 16)
 
 if __name__ == '__main__':
     MONGODB_URI = os.environ.get('MONGODB_URI')
