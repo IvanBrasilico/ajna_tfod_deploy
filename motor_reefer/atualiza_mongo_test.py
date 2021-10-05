@@ -35,8 +35,8 @@ def update_mongo(engine, limit=10):
     ultimoid = None
     for ind, registro in enumerate(registros):
         s0 = time.time()
-        imagem_id, ultimoid = registro
-        print(imagem_id, ultimoid)
+        ultimoid, imagem_id = registro
+        print(ultimoid, imagem_id)
     if ultimoid:
         sql = 'INSERT INTO ajna_modelos (nome, ultimoid) ' + \
               'VALUES  ("motor_reefer", :ultimoid) ON DUPLICATE KEY UPDATE ' + \
