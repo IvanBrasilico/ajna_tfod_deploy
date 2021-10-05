@@ -13,12 +13,11 @@ from gridfs import GridFS
 from pymongo import MongoClient
 
 sys.path.append('.')
-from reefer_contaminado.carrega_modelo_final_efficientnetB4_rc import ModelContaminado
+from carrega_modelo_final_efficientnetb4_rc import ModelContaminado
 
 logging.basicConfig(level=logging.DEBUG)
 
 MIN_RATIO = 2.1
-
 
 class Comunica():
     """Comportamento padrão para facilitar comunicação modelos-bancos de dados.
@@ -35,7 +34,7 @@ class Comunica():
     FILTRO = {'metadata.contentType': 'image/jpeg'}
     CAMPO_ATUALIZADO = 'metadata.predictions.0'
     DATA_INICIAL = datetime(2020, 12, 16)
-
+    
     def __init__(self, model, mongodb, sqlsession=None, limit=10):
         """
 
@@ -83,19 +82,19 @@ class Comunica():
             pil_image = self.get_pil_image(_id)
             s1 = time.time()
             logging.info(f'Elapsed retrieve time {s1 - s0}')
-            pred = self.model.predict(pil_image)
+            pred = self.model.predict(pil_image)[0]
             s2 = time.time()
             logging.info(f'Elapsed model time {s2 - s1}.')
-            logging.info({'_id': _id, 'pred': pred})
-            self.mongodb['fs.files'].update(
+            logging.info({'_id': _id, 'Score:': pred})
+            self.mongodb['fs.files'].update_one(
                 {'_id': _id},
-                {'$set': {self.campo_a_atualizar: pred}}
+                {'$set': {self.campo_a_atualizar: float(pred)}}
             )
             s3 = time.time()
             logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
 
+    # TODO Deprecada. Refatorar!
     def get_metrics(self, fbeta, take=1000, SEED=42):
-
         random.seed(SEED)
         # pega uma amostra randomica de tamanho 'take'de todos os reefers.
         num_docs = self.cursor.count()
@@ -127,7 +126,7 @@ class ComunicaReeeferContaminado(Comunica):
         self.pil_image = self.pil_image.crop((bbox[0], bbox[1], bbox[2], bbox[3]))
         return self.pil_image
 
-
+# TODO Refatorar para baixar o k percentil
 def baixa_falso_positivo(comunica, limit=50):
     comunica.filtro['metadata.predictions.reefer.reefer_contaminado'] = True
     comunica.limit = limit

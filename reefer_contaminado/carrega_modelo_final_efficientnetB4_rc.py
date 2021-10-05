@@ -17,7 +17,7 @@ from PIL import Image
 from tensorflow.keras.models import load_model
 
 IMG_SIZE = 380
-MODEL = os.path.join('models', 'efficientnetb4', 'transfer_from_imagenet_unfreeze150_7e30.h5')
+MODEL = os.path.join('models', 'efficientnetb4', 'transfer_from_imagenet_unfreeze200_7e30_basev10.h5')
 
 if os.path.exists(MODEL):
     print(f'\nLoading model from {MODEL}')
@@ -38,13 +38,10 @@ class ModelContaminado():
         img_array = self.image_to_np(image)
         prediction = self.model.predict(img_array)
         # Retorna True se contaminado e False se não contaminado
-        print(prediction)
-        return float(prediction[0]) > .5
-
+        return prediction[0]
 
 classes = {0: 'Nao contaminado',
            1: 'Contaminado'}
-
 if __name__ == '__main__':
     model = ModelContaminado()
 
