@@ -12,6 +12,7 @@ FORMAT_STRING = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 
 logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 
+
 def monta_filtro(session, limit: int):
     sql = f'select ultimoid from ajna_modelos where nome="motor_reefer"'
     ultimoid = session.execute(sql).scalar()
@@ -34,8 +35,8 @@ def update_mongo(engine, limit=10):
     ultimoid = None
     for ind, registro in enumerate(registros):
         s0 = time.time()
-        imagem_id = registro['imagem_id']
-        ultimoid = registro['id']
+        imagem_id, ultimoid = registro
+        print(imagem_id, ultimoid)
     if ultimoid:
         sql = 'INSERT INTO ajna_modelos (nome, ultimoid) ' + \
               'VALUES  ("motor_reefer", :ultimoid) ON DUPLICATE KEY UPDATE ' + \
@@ -46,7 +47,6 @@ def update_mongo(engine, limit=10):
 
 
 if __name__ == '__main__':
-
     SQL_URI = os.environ.get('SQL_URI')
     engine = create_engine(SQL_URI)
     update_mongo(engine, 100)

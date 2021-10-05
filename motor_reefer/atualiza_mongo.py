@@ -47,8 +47,7 @@ def update_mongo(model, db, engine, limit=10):
     ultimoid = None
     for ind, registro in enumerate(registros):
         s0 = time.time()
-        imagem_id = registro['imagem_id']
-        ultimoid = registro['id']
+        imagem_id, ultimoid = registro
         grid_out = fs.get(ObjectId(imagem_id))
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
