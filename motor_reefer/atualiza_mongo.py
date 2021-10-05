@@ -28,7 +28,8 @@ def monta_filtro(session, limit: int):
         ultimoid = 0
     logging.info(f'Recuperando {limit} registros a partir de id {ultimoid}')
     session.query()
-    sql = f'select id, id_imagem from ajna_conformidade where id > {ultimoid} and isocode_group like "R%"'
+    sql = f'select id, id_imagem from ajna_conformidade where id > {ultimoid} ' + \
+          f' and isocode_group like "R%"  limit {limit}'
     return session.execute(sql).limit(limit).all()
 
 
