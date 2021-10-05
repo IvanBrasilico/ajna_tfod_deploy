@@ -12,7 +12,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 sys.path.append('.')
-from motor_reefer.carrega_modelo_final_torch import Detectron2Model
+# from motor_reefer.carrega_modelo_final_torch import Detectron2Model
 
 FORMAT_STRING = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
 
