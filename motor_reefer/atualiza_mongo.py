@@ -30,7 +30,7 @@ def monta_filtro(session, limit: int):
     session.query()
     sql = f'select id, id_imagem from ajna_conformidade where id > {ultimoid} ' + \
           f' and isocode_group like "R%"  limit {limit}'
-    return session.execute(sql).limit(limit).all()
+    return session.execute(sql)
 
 
 def update_mongo(model, db, engine, limit=10):
