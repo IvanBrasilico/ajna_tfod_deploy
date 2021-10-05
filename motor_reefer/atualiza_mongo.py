@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 import time
-from datetime import datetime
 
 import cv2
 import numpy as np
@@ -22,42 +21,33 @@ logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 MIN_RATIO = 2.1
 
 
-def monta_filtro(db, session, limit: int):
-    sql = f'select uploadDate from ajna_modelos where nome="motor_reefer"'
-    min_uploadDate = session.execute(sql).scalar()
-    if min_uploadDate is None:
-        min_uploadDate = datetime(2021, 3, 1)
-    logging.info(f'Recuperando {limit} registros a partir de {min_uploadDate}')
-    filtro = {'metadata.contentType': 'image/jpeg',
-              'uploadDate': {'$gte': min_uploadDate},
-              'metadata.predictions.reefer.reefer_bbox': {'$exists': False}}
-    cursor = db['fs.files'].find(
-        filtro, {'uploadDate': 1, 'metadata.predictions': 1}).limit(limit)[:limit]
-    logging.info('Consulta ao banco efetuada.')
-    return cursor, min_uploadDate
+def monta_filtro(session, limit: int):
+    sql = f'select ultimoid from ajna_modelos where nome="motor_reefer"'
+    ultimoid = session.execute(sql).scalar()
+    if ultimoid is None:
+        ultimoid = 0
+    logging.info(f'Recuperando {limit} registros a partir de id {ultimoid}')
+    session.query()
+    sql = f'select id, id_imagem from ajna_conformidade where id > {ultimoid} and isocode_group like "R%"'
+    return session.execute(sql).limit(limit).all()
 
 
 def update_mongo(model, db, engine, limit=10):
     Session = sessionmaker(bind=engine)
     session = Session()
     fs = GridFS(db)
-    cursor, max_uploadDate = monta_filtro(db, session, limit)
+    registros = monta_filtro(session, limit)
     score_soma = 0.
     contagem = 0.001
 
     predictor = model.get_predictor()
 
-    for ind, registro in enumerate(cursor):
+    ultimoid = None
+    for ind, registro in enumerate(registros):
         s0 = time.time()
-        _id = registro['_id']
-        sql = f'select isocode_group from ajna_conformidade where id_imagem="{str(_id)}"'
-        isocode_group = session.execute(sql).scalar()
-        if isocode_group is None or isocode_group[0] != 'R':
-            logging.info(f'Pulando registro {_id} por não ser reefer')
-            continue
-        if registro['uploadDate'] > max_uploadDate:
-            max_uploadDate = registro['uploadDate']
-        grid_out = fs.get(ObjectId(_id))
+        imagem_id = registro['imagem_id']
+        ultimoid = registro['id']
+        grid_out = fs.get(ObjectId(imagem_id))
         img_str = grid_out.read()
         nparr = np.fromstring(img_str, np.uint8)
         image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
@@ -84,25 +74,26 @@ def update_mongo(model, db, engine, limit=10):
             score_soma += score
             contagem += 1.
         if class_label is None:
-            logging.info(f'Pulando registro {_id} porque classe veio vazia...')
+            logging.info(f'Pulando registro {imagem_id} porque classe veio vazia...')
             continue
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
         # new_preds = normalize_preds(preds, size)
         new_predictions = [{'reefer_bbox': preds, 'reefer_class': class_label, 'reefer_score': score}]
-        logging.info({'_id': _id, 'metadata.predictions.0.reefer': new_predictions})
+        logging.info({'_id': imagem_id, 'metadata.predictions.0.reefer': new_predictions})
         db['fs.files'].update(
-            {'_id': _id},
+            {'_id': imagem_id},
             {'$set': {'metadata.predictions.0.reefer': new_predictions}}
         )
         s3 = time.time()
         logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
-    sql = 'INSERT INTO ajna_modelos (nome, uploadDate) ' + \
-          'VALUES  ("motor_reefer", :uploadDate) ON DUPLICATE KEY UPDATE ' + \
-          'uploadDate = :uploadDate'
-    logging.info(f'Fazendo UPSERT no uploadDate para {max_uploadDate}: {sql}')
-    session.execute(sql, {'uploadDate': max_uploadDate})
-    session.commit()
+    if ultimoid:
+        sql = 'INSERT INTO ajna_modelos (nome, ultimoid) ' + \
+              'VALUES  ("motor_reefer", :ultimoid) ON DUPLICATE KEY UPDATE ' + \
+              'ultimoid = :ultimoid'
+        logging.info(f'Fazendo UPSERT no uploadDate para {ultimoid}: {sql}')
+        session.execute(sql, {'ultimoid': ultimoid})
+        session.commit()
 
 
 if __name__ == '__main__':
