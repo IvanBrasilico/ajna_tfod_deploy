@@ -29,8 +29,9 @@ def monta_filtro(session, limit: int):
     logging.info(f'Recuperando {limit} registros a partir de id {ultimoid}')
     session.query()
     sql = f'select id, id_imagem from ajna_conformidade where id > {ultimoid} ' + \
-          f' and isocode_group like "R%"  limit {limit}'
-    return session.execute(sql)
+          f' and isocode_group like "R%" order by id limit {limit}'
+    logging.info(sql)
+    return session.execute(sql).all()
 
 
 def update_mongo(model, db, engine, limit=10):
