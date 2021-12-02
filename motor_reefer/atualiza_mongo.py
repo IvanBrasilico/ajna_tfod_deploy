@@ -33,8 +33,8 @@ def monta_filtro(session, limit: int):
 
 def if_reefer_right_side(image_width: int, bbox: list, class_label: int) -> bool:
     is_right_side = None
-    if (class_label != 2 and image_width / 2 < bbox[0]):
-        is_right_side = True
+    if class_label and class_label != 2: 
+        is_right_side = image_width / 2 < bbox[0]
     return is_right_side
     
 
