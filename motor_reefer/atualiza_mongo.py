@@ -12,14 +12,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 sys.path.append('.')
-# from motor_reefer.carrega_modelo_final_torch import Detectron2Model
+from motor_reefer.carrega_modelo_final_torch import Detectron2Model
 
 FORMAT_STRING = '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
-
 logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
 
 MIN_RATIO = 2.1
-
 
 def monta_filtro(session, limit: int):
     sql = f'select ultimoid from ajna_modelos where nome="motor_reefer"'
@@ -33,6 +31,12 @@ def monta_filtro(session, limit: int):
     logging.info(sql)
     return list(session.execute(sql).all())
 
+def if_reefer_right_side(image_width: int, bbox: list, class_label: int) -> bool:
+    is_right_side = None
+    if (class_label != 2 and image_width / 2 < bbox[0]):
+        is_right_side = True
+    return is_right_side
+    
 
 def update_mongo(model, db, engine, limit=10):
     Session = sessionmaker(bind=engine)
@@ -60,16 +64,16 @@ def update_mongo(model, db, engine, limit=10):
 
         if len(pred_boxes) == 0 or pred_scores[0] < .95:
             if len(pred_boxes) == 0:
-                class_label = 2
+                class_label = 2 # predicões ruins ou sem predições
                 preds = [0, 0, image.shape[1], image.shape[0]]
                 score = 0.
             else:
-                class_label = 1
+                class_label = 1 # predições razoáveis
                 preds = pred_boxes[0]
                 score = pred_scores[0]
         else:
             preds = pred_boxes[0]
-            class_label = pred_classes[0]
+            class_label = pred_classes[0] # boas predições
             score = pred_scores[0]
         if score > 0.:
             score_soma += score
@@ -80,7 +84,17 @@ def update_mongo(model, db, engine, limit=10):
         s2 = time.time()
         logging.info(f'Elapsed model time {s2 - s1}. SCORE {score} SCORE MÉDIO {score_soma / contagem}')
         # new_preds = normalize_preds(preds, size)
-        new_predictions = [{'reefer_bbox': preds, 'reefer_class': class_label, 'reefer_score': score}]
+
+        img_width = image.shape[1]
+        is_right_side = if_reefer_right_side(img_width, preds, class_label)
+
+        new_predictions = [{
+            'reefer_bbox': preds,
+            'reefer_right_side': is_right_side,
+            'reefer_class': class_label,
+            'reefer_score': score
+            }]
+
         logging.info({'_id': imagem_id, 'metadata.predictions.0.reefer': new_predictions})
         db['fs.files'].update(
             {'_id': imagem_id},
@@ -96,12 +110,7 @@ def update_mongo(model, db, engine, limit=10):
         session.execute(sql, {'ultimoid': ultimoid})
         session.commit()
 
-
 if __name__ == '__main__':
-
-    # saved_model_path = 'models/detectron2_fastcnn/model_final_ciclo04.pth'
-    # num_classes = 1
-    # classes_names = ['motor']
 
     model = Detectron2Model()
 

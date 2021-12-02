@@ -114,8 +114,6 @@ class Detectron2Model():
         return crops[0] if len(crops) > 0 else crops
 
 
-# TODO fazer deploy em Flask
-
 if __name__ == '__main__':
 
 ##################### 1 Classe ####################################################
@@ -126,7 +124,6 @@ if __name__ == '__main__':
     s = time.time()
     
     model = Detectron2Model()
-    
     model.set_threshold(.9)
 
     ground_true_bbox = [[135, 21, 210, 637],
