@@ -33,10 +33,10 @@ def monta_filtro(session, limit: int):
 
 def if_reefer_right_side(image_width: int, bbox: list, class_label: int) -> bool:
     is_right_side = None
-    if class_label and class_label != 2: 
+    if class_label and class_label != 2:
         is_right_side = image_width / 2 < bbox[0]
     return is_right_side
-    
+
 
 def update_mongo(model, db, engine, limit=10):
     Session = sessionmaker(bind=engine)
@@ -95,10 +95,10 @@ def update_mongo(model, db, engine, limit=10):
             'reefer_score': score
             }]
 
-        logging.info({'_id': imagem_id, 'metadata.predictions.0.reefer': new_predictions})
+        logging.info({'_id': imagem_id, 'metadata.predictions.$.reefer': new_predictions})
         db['fs.files'].update(
             {'_id': imagem_id},
-            {'$set': {'metadata.predictions.0.reefer': new_predictions}}
+            {'$set': {'metadata.predictions.$.reefer': new_predictions}}
         )
         s3 = time.time()
         logging.info(f'Elapsed update time {s3 - s2} - registro {ind}')
