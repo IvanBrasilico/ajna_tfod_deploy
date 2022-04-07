@@ -43,8 +43,11 @@ def update_mongo(model, db, limit=10):
         # pred_gravado = registro.get('metadata').get('predictions')
         grid_out = fs.get(_id)
         image = grid_out.read()
-        pil_image = Image.open(io.BytesIO(image))
-        pil_image = pil_image.convert('RGB')
+        try:
+            pil_image = Image.open(io.BytesIO(image))
+            pil_image = pil_image.convert('RGB')
+        except:
+            continue
         size = pil_image.size
         s1 = time.time()
         logging.info(f'Elapsed retrieve time {s1 - s0}')
