@@ -4,7 +4,7 @@ import time
 from pymongo import MongoClient
 
 from atualiza_mongo_rc import ComunicaReeeferContaminado
-from carrega_modelo_final_efficientnetB4_rc import ModelContaminado
+from carrega_modelo_final_efficientnetb4_rc import ModelContaminado
 
 logging.basicConfig(level=logging.DEBUG)
 
