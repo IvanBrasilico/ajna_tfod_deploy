@@ -6,8 +6,9 @@ from pymongo import MongoClient
 from sqlalchemy import create_engine
 
 sys.path.append('.')
-from motor_reefer.atualiza_mongo import update_mongo, FORMAT_STRING
-from motor_reefer.carrega_modelo_final_torch import Detectron2Model
+from motor_reefer.atualiza_mongo import update_mongo, FORMAT_STRING, Detectron2Model
+# from motor_reefer.carrega_modelo_final_torch import Detectron2Model
+
 
 
 logging.basicConfig(level=logging.DEBUG, format=FORMAT_STRING)
