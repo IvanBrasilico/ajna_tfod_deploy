@@ -3,8 +3,6 @@ import os
 import sys
 import time
 
-import cv2
-import numpy as np
 from bson import ObjectId
 from gridfs import GridFS
 from pymongo import MongoClient
