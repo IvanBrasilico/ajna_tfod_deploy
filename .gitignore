@@ -1,6 +1,7 @@
 # Project exclude paths
 /venv/
 /venv_tf23/
+/venv_tf22/
 
 /teste2.jpg
 /teste2_original.jpg
